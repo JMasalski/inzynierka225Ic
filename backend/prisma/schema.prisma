@@ -1,0 +1,48 @@
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+enum Role {
+  ROOT
+  TEACHER
+  STUDENT
+}
+
+model User {
+  id                String   @id @default(uuid())
+  username          String   @unique
+  password          String   @default("11111")
+  role              Role     @default(STUDENT)
+  hasOnboarded      Boolean  @default(false)
+  createdByTeacherId String?
+  groupId           String?
+
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime? @updatedAt
+
+  // Relacje
+  createdByTeacher  User?     @relation("TeacherStudents", fields: [createdByTeacherId], references: [id])
+  students          User[]    @relation("TeacherStudents")
+
+  group             Group?    @relation(fields: [groupId], references: [id])
+  teachingGroups    Group[]   @relation("TeacherGroups")
+
+  @@index([role])
+}
+
+model Group {
+  id          String   @id @default(uuid())
+  name        String
+  teacherId   String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  //Relacje
+  teacher     User     @relation("TeacherGroups", fields: [teacherId], references: [id])
+  students    User[]
+}
