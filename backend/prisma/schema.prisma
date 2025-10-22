@@ -16,7 +16,7 @@ enum Role {
 model User {
   id                String   @id @default(uuid())
   username          String   @unique
-  password          String   @default("11111")
+  password          String
   role              Role     @default(STUDENT)
   hasOnboarded      Boolean  @default(false)
   createdByTeacherId String?
