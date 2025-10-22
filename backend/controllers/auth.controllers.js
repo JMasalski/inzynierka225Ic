@@ -3,6 +3,9 @@ import * as bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 
 const signToken = (id) => {
+    if (!process.env.JWT_SECRET) {
+        throw new Error("Brak JWT_SECRET w pliku konfiguracyjnym");
+    }
     return jwt.sign({id}, process.env.JWT_SECRET, {expiresIn: "1d"})
 }
 
@@ -17,7 +20,9 @@ export const createUser = async (req, res) => {
         if (user.role !== "ROOT" && user.role !== "TEACHER") {
             res.status(403).json({message: "Brak uprawnień do dodawania użytkowników"})
         }
-
+        if (!process.env.FIRST_PASSWORD) {
+            res.status(500).json("Brak FIRST_PASSWORD w pliku konfiguracyjnym")
+        }
         const hashedPassword = await bcrypt.hash(process.env.FIRST_PASSWORD, 10);
 
         const newUsersData = students.map((student) => {
@@ -52,12 +57,12 @@ export const login = async (req, res) => {
     const {username, password} = req.body;
     try {
         if (!username || !password) {
-            return res.status(401).json({error: "Nazwa użytkownika lub hasło jest wymagane"});
+            return res.status(400).json({error: "Nazwa użytkownika lub hasło jest wymagane"});
         }
 
         const existingUser = await prisma.user.findUnique({where: {username}});
         if (!existingUser) {
-            return res.status(401).json({error: "Nie znaleziono użytkownika"});
+            return res.status(401).json({error: "Nieprawidłowe dane"});
         }
 
         const isPasswordMatch = await bcrypt.compare(password, existingUser.password)
@@ -81,7 +86,7 @@ export const login = async (req, res) => {
             },
         });
     } catch (err) {
-
+        return res.status(500).json({message: "Nie udało się zalogować"});
     }
 }
 

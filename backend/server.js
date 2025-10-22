@@ -1,5 +1,6 @@
 import express from 'express';
 import dotenv from 'dotenv';
+dotenv.config()
 import cors from 'cors';
 import cookieParser from 'cookie-parser';
 import {createRoot} from "./lib/createRoot.js";
@@ -13,7 +14,7 @@ app.use(cors({
 }))
 
 app.use(cookieParser())
-dotenv.config()
+
 
 
 app.use('/api/v1/auth',authRouter);
