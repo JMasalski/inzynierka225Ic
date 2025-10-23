@@ -1,0 +1,5 @@
+-- AlterTable
+ALTER TABLE `User` ADD COLUMN `firstName` VARCHAR(191) NULL,
+    ADD COLUMN `lastName` VARCHAR(191) NULL,
+    ALTER COLUMN `password` DROP DEFAULT,
+    MODIFY `updatedAt` DATETIME(3) NULL;
