@@ -4,7 +4,6 @@ import {ROLES} from "../lib/roles.js";
 import {signToken} from "../lib/generateJWT.js";
 
 
-
 export const createUser = async (req, res) => {
     try {
         const {users} = req.body;
@@ -27,7 +26,7 @@ export const createUser = async (req, res) => {
 
         const newUsersData = users.map((user) => {
             if (!user.username || !user.role) {
-                throw new Error("Każdy użytkownik musi mieć 'username' i 'role'");
+                return res.status(400).json({message: "Każdy użytkownik musi mieć 'username' i 'role'"});
             }
 
             return {
@@ -60,7 +59,18 @@ export const login = async (req, res) => {
             return res.status(400).json({message: "Nazwa użytkownika lub hasło jest wymagane"});
         }
 
-        const existingUser = await prisma.user.findUnique({where: {username}});
+        const existingUser = await prisma.user.findUnique({
+            where: {username},
+            select: {
+                id: true,
+                username: true,
+                role: true,
+                hasOnboarded: true,
+                firstName: true,
+                lastName: true,
+                password: true
+            }
+        });
         if (!existingUser) {
             return res.status(401).json({message: "Nieprawidłowe dane"});
         }
@@ -78,7 +88,7 @@ export const login = async (req, res) => {
             sameSite: "none",
             maxAge: 24 * 60 * 60 * 1000,
         })
-        const {password: _, ...safeUser} = existingUser;
+        const {password: _pwd, ...safeUser} = existingUser;
         return res.status(200).json({
             message: "Zalogowano pomyślnie",
             user: safeUser,

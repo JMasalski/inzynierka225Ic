@@ -5,7 +5,7 @@ import OnboardingForm from "@/app/(protected)/onboarding/OnboardingForm";
 
 const Page = () => {
     return (
-        <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 via-white to-indigo-50 p-4">
+        <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-100 via-white to-indigo-100 p-4">
             <Card className="w-full max-w-xl shadow-lg">
                 <CardHeader className="space-y-3 text-center">
                     <div className="flex items-center justify-center">

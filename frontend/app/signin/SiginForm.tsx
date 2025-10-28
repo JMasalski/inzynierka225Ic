@@ -4,7 +4,7 @@ import React, {useState} from "react"
 
 
 import {Card, CardContent, CardDescription, CardHeader, CardTitle} from "@/components/ui/card"
-import {Code2, EyeOff, Eye} from "lucide-react"
+import {Code2, EyeOff, Eye, Loader2} from "lucide-react"
 
 import {Form, FormControl, FormField, FormItem, FormLabel} from "@/components/ui/form"
 import {useForm} from "react-hook-form";
@@ -15,6 +15,7 @@ import {Input} from "@/components/ui/input";
 import {Button} from "@/components/ui/button";
 import {useAuthStore} from "@/store/useAuthStore";
 import {useRouter} from "next/navigation";
+import {toast} from "sonner";
 
 
 export default function LoginForm() {
@@ -27,23 +28,39 @@ export default function LoginForm() {
             password: "",
         }
     })
-    const {login,loading} = useAuthStore()
+    const {login, loading} = useAuthStore()
 
-    const handleLogin = async(values: z.infer<typeof loginFormSchema>) => {
-        console.log(values)
-        const user = await login(values)
-        if (!user) return;
-        if (!user.hasOnboarded){
-            router.push("/onboarding")
-        }else{
-            router.push("/")
+    const handleLogin = async (values: z.infer<typeof loginFormSchema>) => {
+        try {
+            const user = await login(values);
+
+            if (!user) {
+                form.setError("root", {
+                    type: "manual",
+                    message: "Nie udało się zalogować. Spróbuj ponownie.",
+                });
+                return;
+            }
+
+            if (!user.hasOnboarded) {
+                router.push("/onboarding");
+            } else {
+                router.push("/");
+            }
+
+        } catch (err: any) {
+            console.log(err.response)
+
+            const errorMessage =
+                err?.response?.data?.message ||
+                "Wystąpił nieoczekiwany błąd podczas logowania.";
+
+            form.setError("root", {type: "manual", message: errorMessage});
         }
-
-    }
-
+    };
     return (
         <div
-            className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 via-white to-indigo-50 p-4">
+            className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-100 via-white to-indigo-100 p-4">
             <Card className="w-full max-w-md shadow-lg">
                 <CardHeader className="space-y-3 text-center">
                     <div className="flex justify-center">
@@ -65,7 +82,7 @@ export default function LoginForm() {
                                     <FormItem>
                                         <FormLabel htmlFor="username">Username</FormLabel>
                                         <FormControl>
-                                            <Input placeholder="Login" {...field} required />
+                                            <Input placeholder="Login" {...field} required/>
                                         </FormControl>
                                     </FormItem>
                                 )}
@@ -78,18 +95,34 @@ export default function LoginForm() {
                                         <FormLabel htmlFor="password">Hasło</FormLabel>
                                         <FormControl>
                                             <div className="relative">
-                                                <Input placeholder="••••" {...field} type={showPassword?"text":"password"} required />
-                                                <Button type="button" variant="ghost" onClick={()=> setShowPassword(!showPassword)}
+                                                <Input placeholder="••••" {...field}
+                                                       type={showPassword ? "text" : "password"} required/>
+                                                <Button type="button" variant="ghost"
+                                                        onClick={() => setShowPassword(!showPassword)}
                                                         className="absolute right-0 top-0 hover:bg-transparent hover:text-inherit cursor-pointer"
                                                 >
-                                                    {showPassword? <EyeOff /> : <Eye />}
+                                                    {showPassword ? <EyeOff/> : <Eye/>}
                                                 </Button>
                                             </div>
                                         </FormControl>
                                     </FormItem>
                                 )}
                             />
-                            <Button className="w-full" type="submit">Login</Button>
+                            {form.formState.errors.root && (
+
+                                <p className="text-md text-red-500  text-center">
+                                    {form.formState.errors.root.message}
+                                </p>
+                            )}
+                            <Button className="w-full" type="submit"
+                                    disabled={form.formState.isSubmitting}>
+                                {form.formState.isSubmitting ? (
+                                        <>
+                                            <Loader2 className="w-4 h-4 mr-2 animate-spin"/>
+                                        </>
+                                    ) :
+                                    ('Zaloguj')}
+                            </Button>
                         </form>
                     </Form>
                 </CardContent>
