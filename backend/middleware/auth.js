@@ -10,7 +10,7 @@ export const authenticate = async (req, res, next) => {
 
     const user = await prisma.user.findUnique({
         where: { id: decoded.id },
-        select: { id: true, username: true, role: true , hasOnboarded:true}
+        select: { id: true, username: true, role: true , hasOnboarded:true,firstName:true, lastName:true},
     });
 
     req.user = user;
