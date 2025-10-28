@@ -14,7 +14,7 @@ export const completeOnboarding = async (req, res) => {
         }
 
         if (password.length < 8) {
-            return res.status(400).json({ message: "Hasło musi mieć conajmniej 8 znaków" });
+            return res.status(400).json({ message: "Hasło musi mieć co najmniej 8 znaków" });
         }
 
         const hashedPassword = await bcrypt.hash(password, 10);

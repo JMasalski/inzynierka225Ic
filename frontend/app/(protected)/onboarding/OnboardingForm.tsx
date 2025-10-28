@@ -72,7 +72,12 @@ const OnboardingForm = () => {
     const handleSubmit = async (values: z.infer<typeof onboardingFormSchema>) => {
         try {
             const { confirmPassword, ...apiData } = values;
-            await completeOnboarding(apiData);
+            const updatedUser =await  completeOnboarding(apiData);
+            if (!updatedUser || !updatedUser.hasOnboarded) {
+                throw new Error("Nie udało się ukończyć onboardingu");
+                toast.error("Nie udało się ukończyć onboardingu");
+
+            }
             router.push("/home");
         } catch (error: any) {
             toast.error(error.message || "Wystąpił błąd podczas zapisywania");

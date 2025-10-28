@@ -22,7 +22,8 @@ export const onboardingFormSchema = z.object({
         .max(50, "Hasło może mieć maksymalnie 50 znaków")
         .regex(/[A-Z]/, "Hasło musi zawierać wielką literę")
         .regex(/[a-z]/, "Hasło musi zawierać małą literę")
-        .regex(/[0-9]/, "Hasło musi zawierać cyfrę"),
+        .regex(/[0-9]/, "Hasło musi zawierać cyfrę")
+        .regex(/[^A-Za-z0-9]/, "Hasło musi zawierać znak specjalny"),
     confirmPassword: z
         .string()
         .min(1, "Potwierdź hasło"),
