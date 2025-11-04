@@ -26,6 +26,8 @@ export const createRoot = async () => {
                 password: hashed,
                 role: Role.ROOT,
                 hasOnboarded: true,
+                firstName: "Root",
+                lastName: "Root",
             },
         })
         console.log("Root account created")
