@@ -15,6 +15,7 @@ const Page = () => {
     const router = useRouter()
     if (authUser?.role !== ROLES.TEACHER && authUser?.role !== ROLES.ROOT) {
         router.replace("/home")
+        return null;
     }
 
 
@@ -36,8 +37,8 @@ const Page = () => {
                 <CardContent>
                     <Tabs defaultValue="usersTab" className="gap-12">
                         <TabsList className="grid w-full grid-cols-2">
-                            <TabsTrigger value="usersTab">Account</TabsTrigger>
-                            <TabsTrigger value="exercisesTab">Password</TabsTrigger>
+                            <TabsTrigger value="usersTab">Użytkownicy</TabsTrigger>
+                            <TabsTrigger value="exercisesTab">Zadania</TabsTrigger>
                         </TabsList>
                         <TabsContent value="usersTab" className="space-y-6">
                             <UsersTab/>

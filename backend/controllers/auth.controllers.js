@@ -73,9 +73,12 @@ export const login = async (req, res) => {
         });
 
 
-        const isPasswordMatch = await bcrypt.compare(password, existingUser.password)
-        if (!existingUser||!isPasswordMatch) {
-            return res.status(401).json({message: "Nieprawidłowy login lub hasło"})
+        if (!existingUser) {
+            return res.status(401).json({message: "Nieprawidłowy login lub hasło"});
+        }
+        const isPasswordMatch = await bcrypt.compare(password, existingUser.password);
+        if (!isPasswordMatch) {
+            return res.status(401).json({message: "Nieprawidłowy login lub hasło"});
         }
 
 

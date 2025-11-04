@@ -23,7 +23,7 @@ const Navbar = () => {
                     </div>
                 </div>
                 <nav className="flex items-center gap-3">
-                    {authUser?.role === ROLES.TEACHER || ROLES.ROOT && (
+                    {authUser?.role === ROLES.TEACHER || authUser?.role === ROLES.ROOT && (
                         <Button variant="ghost" size="sm"  onClick={() => {router.push('/teacher-dashboard')}}>
                             Panel nauczyciela
                             <UserStar />
