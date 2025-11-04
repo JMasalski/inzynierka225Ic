@@ -1,8 +1,9 @@
 "use client";
 
-import { useEffect, useRef } from "react";
-import { useRouter, usePathname } from "next/navigation";
-import { useAuthStore } from "@/store/useAuthStore";
+import {useEffect, useRef} from "react";
+import {useRouter, usePathname} from "next/navigation";
+import {useAuthStore} from "@/store/useAuthStore";
+import Navbar from "@/components/Navbar";
 
 export default function ProtectedLayout({
                                             children
@@ -11,7 +12,7 @@ export default function ProtectedLayout({
 }) {
     const router = useRouter();
     const pathname = usePathname();
-    const { checkingAuth, authUser, checkAuth } = useAuthStore();
+    const {checkingAuth, authUser, checkAuth} = useAuthStore();
     const hasCheckedAuth = useRef(false);
 
     useEffect(() => {
@@ -59,5 +60,14 @@ export default function ProtectedLayout({
         );
     }
 
-    return <>{children}</>;
+    return (
+        <div className="flex flex-col min-h-screen">
+            <Navbar />
+            <main className="flex-1 bg-gradient-to-br from-purple-50 via-white to-pink-50">
+                <div className="container mx-auto px-4 py-8">
+                    {children}
+                </div>
+            </main>
+        </div>
+    );
 }

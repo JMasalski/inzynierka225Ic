@@ -9,6 +9,7 @@ interface User {
     firstName: string,
     lastName: string,
     hasOnboarded: boolean,
+    role:string
 }
 
 type AuthState = {
@@ -16,8 +17,9 @@ type AuthState = {
     checkingAuth: boolean,
     loading: boolean,
     login: (data: z.infer<typeof loginFormSchema>) => Promise<User | null>,
-    completeOnboarding: (data: z.infer<typeof onboardingApiSchema>) => Promise<User|null>,
+    completeOnboarding: (data: z.infer<typeof onboardingApiSchema>) => Promise<User | null>,
     checkAuth: () => Promise<void>,
+    logout: () => Promise<void>,
 }
 export const useAuthStore = create<AuthState>((set) => ({
     authUser: null,
@@ -57,5 +59,14 @@ export const useAuthStore = create<AuthState>((set) => ({
         if (!user) throw new Error(res.data?.message || "Błąd onboardingu");
         set({authUser: user});
         return user;
-    }
+    },
+
+    logout: async () => {
+        try {
+            const res = await axiosInstance.post("api/v1/auth/logout");
+            if (res.status === 200) set({authUser: null});
+        } catch (error) {
+            console.log(error)
+        }
+    },
 }))

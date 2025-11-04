@@ -15,7 +15,6 @@ import {Input} from "@/components/ui/input";
 import {Button} from "@/components/ui/button";
 import {useAuthStore} from "@/store/useAuthStore";
 import {useRouter} from "next/navigation";
-import {toast} from "sonner";
 
 
 export default function LoginForm() {
@@ -80,7 +79,7 @@ export default function LoginForm() {
                                 name="username"
                                 render={({field}) => (
                                     <FormItem>
-                                        <FormLabel htmlFor="username">Username</FormLabel>
+                                        <FormLabel htmlFor="username">Login</FormLabel>
                                         <FormControl>
                                             <Input placeholder="Login" {...field} required/>
                                         </FormControl>
