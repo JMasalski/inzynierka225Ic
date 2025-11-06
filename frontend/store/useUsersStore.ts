@@ -21,7 +21,7 @@ export const useUsersStore = create<UsersState>((set) => ({
             toast.success(res.data.message)
         } catch (e:any) {
             console.log(e.response.data.message);
-            toast.error(e.response?.data?.message || "Error adding product");
+            toast.error(e.response?.data?.message || "Wystąpił błąd podczas dodawania użytkowników");
         } finally {
             set({loading: false})
         }
