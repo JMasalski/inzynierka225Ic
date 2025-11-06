@@ -3,6 +3,11 @@
 
 @custom-variant light (&:is(.light *));
 
+@layer utilities {
+  .shadow-custom {
+    box-shadow: inset 0 1px 2px #ffffff30, 0 1px 2px #00000030, 0 2px 4px #00000015;
+  }
+}
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
@@ -76,6 +81,7 @@
   --sidebar-accent-foreground: oklch(0.205 0 0);
   --sidebar-border: oklch(0.922 0 0);
   --sidebar-ring: oklch(0.708 0 0);
+  --shadow-font: inset 0 1px 2px #ffffff30, 0 1px 2px #00000030,0 2px 4px #00000015;
 }
 
 .dark {

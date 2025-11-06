@@ -1,7 +1,8 @@
-import React from 'react'
+import React, {useState} from 'react'
 import {DataGrid, GridColDef, GridRowsProp} from "@mui/x-data-grid";
 import {Plus} from "lucide-react";
 import {Button} from "@/components/ui/button";
+import AddUsersModal from "@/app/(protected)/teacher-dashboard/componentes/AddUsersModal";
 
 const rows: GridRowsProp = [
     {id: 1, name: 'Data Grid', description: 'the Community version'},
@@ -15,13 +16,14 @@ const columns: GridColDef[] = [
 ];
 
 const UsersTab = () => {
-    return (
+    const [open, setOpen] = useState(false)
+    return (<>
         <div className="space-y-6">
             <div className="flex justify-between items-center">
                 <h1 className="text-xl font-bold  text-gray-900">
                     Lista użytkowników
                 </h1>
-                <Button>
+                <Button onClick={() => setOpen(true)}>
                     <Plus className="w-4 h-4 mr-2" />
                     Dodaj
                 </Button>
@@ -30,6 +32,9 @@ const UsersTab = () => {
                 <DataGrid rows={rows} columns={columns}/>
             </div>
         </div>
+            <AddUsersModal open={open} onOpenChange={setOpen}/>
+        </>
+
     );
 }
 export default UsersTab

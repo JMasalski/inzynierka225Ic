@@ -3,12 +3,12 @@ import {ROLES} from "@/lib/roles";
 import {useAuthStore} from "@/store/useAuthStore";
 import {useRouter} from "next/navigation";
 import {BookOpen, TrendingUp, Users} from "lucide-react";
-import StatisticCard from "@/components/StatisticCard";
+import StatisticCard from "@/app/(protected)/teacher-dashboard/componentes/StatisticCard";
 import {Card, CardContent, CardDescription, CardHeader, CardTitle} from "@/components/ui/card";
 import React from "react";
-import ExercisesTab from "@/components/ExercisesTab";
+import ExercisesTab from "@/app/(protected)/teacher-dashboard/componentes/ExercisesTab";
 import {Tabs, TabsContent, TabsList, TabsTrigger} from "@/components/ui/tabs";
-import UsersTab from "@/components/UsersTab";
+import UsersTab from "@/app/(protected)/teacher-dashboard/componentes/UsersTab";
 
 const Page = () => {
     const {authUser} = useAuthStore()
@@ -28,7 +28,7 @@ const Page = () => {
                                value={"5%"}/>
             </div>
 
-            <Card>
+            <Card className="shadow-custom">
                 <CardHeader>
                     <CardTitle className="font-bold">Zarządzanie platformą</CardTitle>
                     <CardDescription className="text-sm font-medium">Dodawaj uczniów, twórz zadania i monitoruj
