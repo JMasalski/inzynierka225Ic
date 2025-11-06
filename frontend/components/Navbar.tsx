@@ -1,13 +1,14 @@
 import React from 'react'
 import {useAuthStore} from "@/store/useAuthStore";
 import {ROLES} from "@/lib/roles";
-import {Code2, LogOut, UserStar} from "lucide-react";
+import {Code2, Power, UserStar} from "lucide-react";
 import {Button} from "@/components/ui/button";
 import {useRouter} from "next/navigation";
 
 const Navbar = () => {
     const {authUser,logout} = useAuthStore()
     const router = useRouter()
+    console.log(authUser)
 
     return (
         <header className="border-b bg-white/80 backdrop-blur-sm">
@@ -23,7 +24,7 @@ const Navbar = () => {
                     </div>
                 </div>
                 <nav className="flex items-center gap-3">
-                    {authUser?.role === ROLES.TEACHER || authUser?.role === ROLES.ROOT && (
+                    {(authUser?.role === ROLES.TEACHER || authUser?.role === ROLES.ROOT) && (
                         <Button variant="ghost" size="sm"  onClick={() => {router.push('/teacher-dashboard')}}>
                             Panel nauczyciela
                             <UserStar />
@@ -33,7 +34,7 @@ const Navbar = () => {
 
                     <Button variant="ghost" size="sm" onClick={logout}>
                         Wyloguj
-                        <LogOut/>
+                        <Power />
                     </Button>
                 </nav>
             </div>

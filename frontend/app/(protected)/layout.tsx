@@ -16,6 +16,7 @@ export default function ProtectedLayout({
     const hasCheckedAuth = useRef(false);
 
     useEffect(() => {
+        console.log("ProtectedLayout mounted, calling checkAuth()");
         if (!hasCheckedAuth.current) {
             checkAuth();
             hasCheckedAuth.current = true;
