@@ -2,6 +2,7 @@ import {create} from "zustand"
 import {axiosInstance} from "@/lib/axiosInstance";
 import {z} from "zod";
 import {loginFormSchema, onboardingApiSchema} from "@/form_schemas/form_schemas";
+import {toast} from "sonner";
 
 interface User {
     id: string,
@@ -9,6 +10,7 @@ interface User {
     firstName: string,
     lastName: string,
     hasOnboarded: boolean,
+    role: string
 }
 
 type AuthState = {
@@ -16,8 +18,9 @@ type AuthState = {
     checkingAuth: boolean,
     loading: boolean,
     login: (data: z.infer<typeof loginFormSchema>) => Promise<User | null>,
-    completeOnboarding: (data: z.infer<typeof onboardingApiSchema>) => Promise<User|null>,
+    completeOnboarding: (data: z.infer<typeof onboardingApiSchema>) => Promise<User | null>,
     checkAuth: () => Promise<void>,
+    logout: () => Promise<void>,
 }
 export const useAuthStore = create<AuthState>((set) => ({
     authUser: null,
@@ -34,7 +37,6 @@ export const useAuthStore = create<AuthState>((set) => ({
             return user
         } catch (error: any) {
             throw error
-            console.log(error.response.data.message)
         } finally {
             set({loading: false})
         }
@@ -57,5 +59,19 @@ export const useAuthStore = create<AuthState>((set) => ({
         if (!user) throw new Error(res.data?.message || "Błąd onboardingu");
         set({authUser: user});
         return user;
-    }
+    },
+
+    logout: async () => {
+        try {
+            const res = await axiosInstance.post("api/v1/auth/logout");
+            if (res.status === 200) {
+                set({authUser: null});
+                toast.success("Wylogowano pomyślnie");
+            }
+        } catch (error) {
+            console.error("Logout error:", error);
+            toast.error("Wystąpił błąd podczas wylogowania");
+            throw error;
+        }
+    },
 }))

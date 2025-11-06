@@ -73,15 +73,17 @@ const OnboardingForm = () => {
         try {
             const { confirmPassword, ...apiData } = values;
             const updatedUser =await  completeOnboarding(apiData);
-            if (!updatedUser || !updatedUser.hasOnboarded) {
-                throw new Error("Nie udało się ukończyć onboardingu");
-                toast.error("Nie udało się ukończyć onboardingu");
-
+            if (!updatedUser?.hasOnboarded) {
+                toast.error("Nie udało się ukończyć onboardingu.");
+                return;
             }
             router.push("/home");
         } catch (error: any) {
-            toast.error(error.message || "Wystąpił błąd podczas zapisywania");
-        }
+            const message =
+                error?.response?.data?.message ||
+                error.message ||
+                "Wystąpił błąd podczas zapisywania";
+            toast.error(message);        }
     };
     return (
         <Form {...form}>
