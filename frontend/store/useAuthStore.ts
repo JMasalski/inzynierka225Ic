@@ -42,14 +42,17 @@ export const useAuthStore = create<AuthState>((set) => ({
         }
     },
     checkAuth: async () => {
+        console.log("checkAuth start")
         try {
-            const res = await axiosInstance.get("api/v1/auth/auth-user")
-            set({authUser: res.data.user})
-        } catch (err) {
-            set({authUser: null})
-
+            const res = await axiosInstance.get("/api/v1/auth/auth-user", { withCredentials: true });
+            console.log("checkAuth success", res.data);
+            set({ authUser: res.data.user });
+        } catch (err: any) {
+            console.error("checkAuth error:", err.response?.data || err.message);
+            set({ authUser: null });
         } finally {
-            set({checkingAuth: false})
+            console.log("checkAuth finished");
+            set({ checkingAuth: false });
         }
     },
 

@@ -3,7 +3,7 @@
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useAuthStore } from "@/store/useAuthStore";
-import LoginForm from "@/app/signin/SiginForm";
+import LoginForm from "@/app/(auth)/signin/SiginForm";
 
 export default function SignInPage() {
     const router = useRouter();
