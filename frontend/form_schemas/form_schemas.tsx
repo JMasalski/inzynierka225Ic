@@ -35,3 +35,12 @@ export const onboardingFormSchema = z.object({
 export const onboardingApiSchema = onboardingFormSchema.omit({
     confirmPassword: true
 });
+
+export const userEntrySchema = z.object({
+    username: z.string().min(1, "Wymagane"),
+    role: z.enum(["STUDENT", "TEACHER"])
+});
+
+export const usersFormSchema = z.object({
+    users: z.array(userEntrySchema).min(1)
+});

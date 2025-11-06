@@ -58,8 +58,7 @@ export default function LoginForm() {
         }
     };
     return (
-        <div
-            className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-100 via-white to-indigo-100 p-4">
+
             <Card className="w-full max-w-md shadow-lg">
                 <CardHeader className="space-y-3 text-center">
                     <div className="flex justify-center">
@@ -126,6 +125,5 @@ export default function LoginForm() {
                     </Form>
                 </CardContent>
             </Card>
-        </div>
     )
 }
