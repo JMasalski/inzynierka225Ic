@@ -6,16 +6,7 @@ import {User, useUsersStore} from "@/store/useUsersStore";
 import useDebounce from "@/lib/useDebounce";
 import {useGroupStore} from "@/store/useGroupStore";
 import {ROLES} from "@/lib/roles";
-import {
-    Dialog,
-    DialogClose,
-    DialogContent,
-    DialogDescription, DialogFooter,
-    DialogHeader,
-    DialogTitle,
-    DialogTrigger
-} from "@/components/ui/dialog";
-import {Button} from "@/components/ui/button";
+import ConfirmDeleteDialog from "@/app/(protected)/teacher-dashboard/componentes/ConfirmDeleteDialog";
 
 
 const DataGridUsers = () => {
@@ -134,43 +125,9 @@ const DataGridUsers = () => {
             width: 80,
             getActions: (params) => {
                 return [
-                    <Dialog>
-                        <DialogTrigger asChild>
-                            <Button variant="ghost">
-                                <TrashIcon/>
-                            </Button>
-                        </DialogTrigger>
-                        <DialogContent className="sm:max-w-md md:max-w-lg">
-                            <DialogHeader>
-                                <DialogTitle>Usuń użytkownika</DialogTitle>
-                                <DialogDescription>
-                                    Czy na pewno chcesz usunąć tego użytkownika? Ta akcja jest nieodwracalna.
-                                </DialogDescription>
-                            </DialogHeader>
-                            <DialogFooter className="flex flex-col sm:flex-row gap-2">
-                                <DialogClose asChild>
-                                    <Button
-                                        type="button"
-                                        variant="destructive"
-                                        onClick={() => deleteUsers([params.id])}
-                                        className="flex-1 sm:flex-1"
-                                    >
-                                        Usuń
-                                    </Button>
-                                </DialogClose>
-
-                                <DialogClose asChild>
-                                    <Button
-                                        type="button"
-                                        variant="secondary"
-                                        className="flex-1 sm:flex-1"
-                                    >
-                                        Zamknij
-                                    </Button>
-                                </DialogClose>
-                            </DialogFooter>
-                        </DialogContent>
-                    </Dialog>,
+                    <ConfirmDeleteDialog title={"Usuń użytkownika"}
+                                         description={"Czy na pewno chcesz usunąć tego użytkownika? Ta akcja jest nieodwracalna."
+                                         } onConfirmDelete={deleteUsers} idsToDelete={[params.id]}/>
                 ];
             }
 
@@ -193,45 +150,14 @@ const DataGridUsers = () => {
                 </div>
                 <div className="flex items-center gap-2">
                     {selectionModel.ids.size > 0 && (
-                        <Dialog>
-                            <DialogTrigger asChild>
-                                <Button variant="outline">
-                                    Usuń {selectionModel.ids.size} użytkowników
-                                </Button>
-                            </DialogTrigger>
-                            <DialogContent className="sm:max-w-md md:max-w-lg">
-                                <DialogHeader>
-                                    <DialogTitle>Usuń użytkowników</DialogTitle>
-                                    <DialogDescription>
-                                        Czy na pewno chcesz usunąć {selectionModel.ids.size} użytkowników? Ta akcja jest nieodwracalna.
-                                    </DialogDescription>
-                                </DialogHeader>
-                                <DialogFooter className="flex flex-col sm:flex-row gap-2">
-                                    <DialogClose asChild>
-                                        <Button
-                                            type="button"
-                                            variant="destructive"
-                                            onClick={() => deleteUsers(Array.from(selectionModel.ids.values()))}
-                                            className="flex-1 sm:flex-1"
-                                        >
-                                            Usuń
-                                        </Button>
-                                    </DialogClose>
+                        <ConfirmDeleteDialog title={"Usuń użytkowników"}
+                                             triggerLabel={`Usuń ${selectionModel.ids.size} użytkowników`}
+                                             description={`Czy na pewno chcesz usunąć ${selectionModel.ids.size} użytkowników? Ta akcja jest nieodwracalna.`}
+                                             onConfirmDelete={deleteUsers}
+                                             idsToDelete={Array.from(selectionModel.ids.values())}
+                        />)}
 
-                                    <DialogClose asChild>
-                                        <Button
-                                            type="button"
-                                            variant="secondary"
-                                            className="flex-1 sm:flex-1"
-                                        >
-                                            Zamknij
-                                        </Button>
-                                    </DialogClose>
-                                </DialogFooter>
-                            </DialogContent>
-                        </Dialog>
 
-                    )}
                 </div>
             </div>
 
