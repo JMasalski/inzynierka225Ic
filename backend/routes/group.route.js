@@ -1,0 +1,24 @@
+import Router from "express";
+import {
+    addStudnetToGroup,
+    createGroup,
+    deleteGroup,
+    getAllGroupes,
+    getGroup, removeStudentFromGroupe, updateGroup
+} from "../controllers/group.controller.js";
+import {authenticate} from "../middleware/auth.js";
+import {requireOnboarding} from "../middleware/requireOnboarding.js";
+
+const groupRouter = Router();
+
+groupRouter.get("/", authenticate,requireOnboarding,getAllGroupes)
+groupRouter.get("/:id", authenticate,requireOnboarding,getGroup)
+groupRouter.post("/create-group",authenticate,requireOnboarding ,createGroup)
+groupRouter.post("/:id/add-students",authenticate,requireOnboarding ,addStudnetToGroup)
+groupRouter.post("/:id/remove-students",authenticate,requireOnboarding ,removeStudentFromGroupe)
+
+groupRouter.delete("/delete-groupes", authenticate,requireOnboarding,deleteGroup)
+groupRouter.patch("/:id",authenticate,requireOnboarding,updateGroup)
+
+
+export default groupRouter;
