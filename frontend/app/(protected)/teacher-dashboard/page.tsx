@@ -9,6 +9,7 @@ import React from "react";
 import ExercisesTab from "@/app/(protected)/teacher-dashboard/componentes/ExercisesTab";
 import {Tabs, TabsContent, TabsList, TabsTrigger} from "@/components/ui/tabs";
 import UsersTab from "@/app/(protected)/teacher-dashboard/componentes/UsersTab";
+import GroupesTab from "@/app/(protected)/teacher-dashboard/componentes/GroupesTab";
 
 const Page = () => {
     const {authUser} = useAuthStore()
@@ -36,12 +37,16 @@ const Page = () => {
                 </CardHeader>
                 <CardContent>
                     <Tabs defaultValue="usersTab" className="gap-12">
-                        <TabsList className="grid w-full grid-cols-2">
+                        <TabsList className="grid w-full grid-cols-3">
                             <TabsTrigger value="usersTab">Użytkownicy</TabsTrigger>
+                            <TabsTrigger value="groupesTab">Grupy</TabsTrigger>
                             <TabsTrigger value="exercisesTab">Zadania</TabsTrigger>
                         </TabsList>
                         <TabsContent value="usersTab" className="space-y-6">
                             <UsersTab/>
+                        </TabsContent>
+                        <TabsContent value="groupesTab" className="space-y-6">
+                            <GroupesTab/>
                         </TabsContent>
                         <TabsContent value="exercisesTab">
                             <ExercisesTab/>
