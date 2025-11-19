@@ -1,7 +1,7 @@
 import {create} from "zustand"
 import {axiosInstance} from "@/lib/axiosInstance";
 import {z} from "zod";
-import { usersFormSchema} from "@/form_schemas/form_schemas";
+import {usersFormSchema} from "@/form_schemas/form_schemas";
 import {toast} from "sonner";
 import {ROLES} from "@/lib/roles";
 import {GridRowId} from "@mui/x-data-grid";
@@ -10,7 +10,7 @@ export interface User {
     id: string;
     firstName: string | null;
     lastName: string | null;
-    role: ROLES.STUDENT| ROLES.TEACHER;
+    role: ROLES.STUDENT | ROLES.TEACHER;
     group: {
         name: string;
         id: string;
@@ -44,12 +44,12 @@ type UsersState = {
 export const useUsersStore = create<UsersState>((set, get) => ({
 
     loading: false,
-    users:[],
-    total:0,
+    users: [],
+    total: 0,
     lastQueryParams: null,
 
     getAllUsers: async (params) => {
-        set({ loading: true, lastQueryParams: params });
+        set({loading: true, lastQueryParams: params});
 
         try {
             const res = await axiosInstance.get("api/v1/users", {
@@ -65,22 +65,22 @@ export const useUsersStore = create<UsersState>((set, get) => ({
             console.log(err)
             toast.error("Nie udało się pobrać użytkowników");
         } finally {
-            set({ loading: false });
+            set({loading: false});
         }
     },
 
-    addUsers: async (clientData :z.infer<typeof usersFormSchema>) => {
+    addUsers: async (clientData: z.infer<typeof usersFormSchema>) => {
         try {
             set({loading: true})
             const res = await axiosInstance.post("/api/v1/auth/create-user", clientData)
             toast.success(res.data.message)
 
-            const { lastQueryParams, getAllUsers } = get();
+            const {lastQueryParams, getAllUsers} = get();
             if (lastQueryParams) {
                 await getAllUsers(lastQueryParams);
             }
-        } catch (e:any) {
-            console.log(e.response.data.message);
+        } catch (e: any) {
+            console.log(e.response?.data?.message ?? e);
             toast.error(e.response?.data?.message || "Wystąpił błąd podczas dodawania użytkowników");
         } finally {
             set({loading: false})
@@ -89,15 +89,15 @@ export const useUsersStore = create<UsersState>((set, get) => ({
 
     deleteUsers: async (ids: GridRowId[]) => {
         try {
-            set({ loading: true });
+            set({loading: true});
 
             const res = await axiosInstance.delete("/api/v1/users/delete", {
-                data: { usersIds: ids }
+                data: {usersIds: ids}
             });
 
             toast.success(res.data.message);
 
-            const { lastQueryParams, getAllUsers } = get();
+            const {lastQueryParams, getAllUsers} = get();
             if (lastQueryParams) {
                 await getAllUsers(lastQueryParams);
             }
@@ -106,7 +106,7 @@ export const useUsersStore = create<UsersState>((set, get) => ({
             console.log(e);
             toast.error(e.response?.data?.message || "Błąd podczas usuwania użytkowników");
         } finally {
-            set({ loading: false });
+            set({loading: false});
         }
     }
 

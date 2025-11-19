@@ -10,11 +10,11 @@ const GroupesTab = () => {
         <div className="space-y-6 h-full">
             <div className="flex justify-between items-center">
                 <h1 className="text-xl font-bold  text-gray-900">
-                    Lista zadań
+                    Lista grup
                 </h1>
                 <Button>
                     <Plus className="w-4 h-4 mr-2"/>
-                    Dodaj zadanie
+                    Dodaj grupę
                 </Button>
             </div>
             <DataGridGroupes/>

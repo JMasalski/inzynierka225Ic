@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from 'react'
-import {ChevronDown, Search, TrashIcon} from "lucide-react";
+import {ChevronDown, Search} from "lucide-react";
 import {Input} from "@/components/ui/input";
 import {DataGrid, GridColDef, GridRowSelectionModel, GridSortModel} from "@mui/x-data-grid";
 import {User, useUsersStore} from "@/store/useUsersStore";
@@ -127,7 +127,10 @@ const DataGridUsers = () => {
                 return [
                     <ConfirmDeleteDialog title={"Usuń użytkownika"}
                                          description={"Czy na pewno chcesz usunąć tego użytkownika? Ta akcja jest nieodwracalna."
-                                         } onConfirmDelete={deleteUsers} idsToDelete={[params.id]}/>
+                                         } onConfirmDelete={deleteUsers} idsToDelete={[params.id]}
+                                         key={params.id}
+                    />
+
                 ];
             }
 
