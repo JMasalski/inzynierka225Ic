@@ -1,6 +1,6 @@
 import Router from "express";
 import {
-    addStudnetToGroup,
+    addStudentToGroup,
     createGroup,
     deleteGroup,
     getAllGroupes,
@@ -14,7 +14,7 @@ const groupRouter = Router();
 groupRouter.get("/", authenticate,requireOnboarding,getAllGroupes)
 groupRouter.get("/:id", authenticate,requireOnboarding,getGroup)
 groupRouter.post("/create-group",authenticate,requireOnboarding ,createGroup)
-groupRouter.post("/:id/add-students",authenticate,requireOnboarding ,addStudnetToGroup)
+groupRouter.post("/:id/add-students",authenticate,requireOnboarding ,addStudentToGroup)
 groupRouter.post("/:id/remove-students",authenticate,requireOnboarding ,removeStudentFromGroupe)
 
 groupRouter.delete("/delete-groupes", authenticate,requireOnboarding,deleteGroup)
