@@ -8,15 +8,17 @@ export const createUser = async (req, res) => {
     try {
         const {users} = req.body;
 
-        if (!users || !Array.isArray(users) || users.length === 0) {
-            return res.status(400).json({message: "Lista użytkowników jest wymagana"});
-        }
-
         const currentUser = req.user;
 
         if (currentUser.role !== ROLES.ROOT && currentUser.role !== ROLES.TEACHER) {
             return res.status(403).json({message: "Brak uprawnień do dodawania użytkowników"});
         }
+
+        if (!users || !Array.isArray(users) || users.length === 0) {
+            return res.status(400).json({message: "Lista użytkowników jest wymagana"});
+        }
+
+
 
         if (!process.env.FIRST_PASSWORD) {
             return res.status(500).json({message: "Brak FIRST_PASSWORD w pliku konfiguracyjnym"});

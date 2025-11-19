@@ -1,6 +1,6 @@
 import {Router} from 'express';
 import {authenticate} from "../middleware/auth.js";
-import {completeOnboarding} from "../controllers/onboarding.controllers.js";
+import {completeOnboarding} from "../controllers/onboarding.controller.js";
 
 const onboardingRouter = Router()
 

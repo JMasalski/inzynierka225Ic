@@ -1,5 +1,5 @@
-export const ROLES = Object.freeze({
-    ROOT: "ROOT",
-    TEACHER: "TEACHER",
-    STUDENT: "STUDENT",
-})
+export enum ROLES {
+    ROOT= "ROOT",
+    TEACHER= "TEACHER",
+    STUDENT= "STUDENT",
+}
