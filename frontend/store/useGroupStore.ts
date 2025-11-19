@@ -1,5 +1,6 @@
 import {create} from "zustand"
 import {axiosInstance} from "@/lib/axiosInstance";
+import {toast} from "sonner";
 
 export type GroupTableItem = {
     id: string;
@@ -31,6 +32,7 @@ type GroupState = {
     updateGroupName: (groupId: string, data: { name: string }) => Promise<void>;
 
     addStudentsToGroup: (groupId: string, studentsIds: string[]) => Promise<void>;
+    removeStudentFromGroup: (id: string[]) => Promise<void>;
 };
 
 export const useGroupStore = create<GroupState>((set) => ({
@@ -69,9 +71,23 @@ export const useGroupStore = create<GroupState>((set) => ({
                 studentsIds
             });
             console.log(res)
+            toast.success(res.data.message);
+
 
         } catch (e) {
             console.error(e);
         }
     },
+
+    removeStudentFromGroup: async(ids:string[]) =>{
+        try{
+            await axiosInstance.post("api/v1/group/remove-students",{
+                studentsIds: ids
+            })
+            toast.success("Użytkownik został usunięty z grupy")
+        }catch (e) {
+            console.log(e)
+            toast.error("Podczas usuwania ucznia wystąpił błąd")
+        }
+    }
 }));
