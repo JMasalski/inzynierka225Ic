@@ -13,7 +13,7 @@ export const getAllGroupes = async (req, res) => {
 
         const page = Number(req.query.page) || 0;
         const pageSize = Number(req.query.pageSize) || 10;
-
+        const allowedSortFields = ["name", "createdAt"];
         let sortField = req.query.sortField || "createdAt";
         const sortOrder = req.query.sortOrder || "desc";
 
@@ -201,48 +201,43 @@ export const deleteGroup = async (req, res) => {
         return res.status(500).json({message: "Wystąpił błąd podczas usuwania grup."});
     }
 };
-export const removeStudentFromGroupe = async (req, res) => {
+export const removeStudentFromGroup = async (req, res) => {
     const requestingUser = req.user;
-    const {studentsIds} = req.body;
+    console.log("BODY:",req.body)
+
+    const { studentsIds } = req.body;
+    
+
     try {
         if (requestingUser.role !== ROLES.ROOT && requestingUser.role !== ROLES.TEACHER) {
-            return res.status(403).json({message: "Nie masz uprawnień by usuwać uczniów z grupy"});
+            return res.status(403).json({ message: "Nie masz uprawnień by usuwać uczniów z grupy." });
         }
+
+        if (!Array.isArray(studentsIds) || studentsIds.length === 0) {
+            return res.status(400).json({ message: "Musisz podać listę identyfikatorów uczniów." });
+        }
+
         await prisma.user.updateMany({
             where: {
-                id: {in: studentsIds},
-                groupId: req.params.id
+                id: { in: studentsIds },
             },
             data: {
-                groupId: null
-            }
-        });
-        if (!Array.isArray(studentsIds) || studentsIds.length === 0) {
-            return res.status(400).json({message: "Musisz podać listę identyfikatorów uczniów."});
-        }
-
-        await prisma.user.updateMany({
-            where:
-                {
-                    id: {in: studentsIds},
-                    groupId: req.params.id
-                }
-            , data: {groupId: null}
+                groupId: null,
+            },
         });
 
-        return res.status(200).json({message: "Uczniowie zostali usunięci z grupy."});
-
+        return res.status(200).json({ message: "Uczniowie zostali usunięci z grupy." });
     } catch (err) {
         console.error(err);
-        return res.status(500).json({message: "Błąd serwera"})
+        return res.status(500).json({ message: "Błąd serwera." });
     }
-}
+};
 export const updateGroup = async (req, res) => {
     const requestingUser = req.user;
     const {name} = req.body;
     try {
         if (requestingUser.role !== ROLES.ROOT && requestingUser.role !== ROLES.TEACHER) {
-            return res.status(403).json({message: "Nie masz uprawnień by dodawać do grup"});
+            return res.status(403).json({message: "Nie masz uprawnień do edytowania grup"});
         }
         if (!name || !name.trim()) {
             return res.status(400).json({message: "Nazwa grupy jest wymagana."});
@@ -261,7 +256,7 @@ export const updateGroup = async (req, res) => {
         })
         return res.status(200).json({message: "Nazwa grupy zmieniona pomyślnie."});
     } catch (err) {
-        console.log(err);
+        console.error(err);
         return res.status(500).json("Błąd serwera");
     }
 }

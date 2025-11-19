@@ -4,7 +4,7 @@ import {
     createGroup,
     deleteGroup,
     getAllGroupes,
-    getGroup, removeStudentFromGroupe, updateGroup
+    getGroup, removeStudentFromGroup, updateGroup
 } from "../controllers/group.controller.js";
 import {authenticate} from "../middleware/auth.js";
 import {requireOnboarding} from "../middleware/requireOnboarding.js";
@@ -15,7 +15,7 @@ groupRouter.get("/", authenticate,requireOnboarding,getAllGroupes)
 groupRouter.get("/:id", authenticate,requireOnboarding,getGroup)
 groupRouter.post("/create-group",authenticate,requireOnboarding ,createGroup)
 groupRouter.post("/:id/add-students",authenticate,requireOnboarding ,addStudentToGroup)
-groupRouter.post("/:id/remove-students",authenticate,requireOnboarding ,removeStudentFromGroupe)
+groupRouter.post("/remove-students",authenticate,requireOnboarding ,removeStudentFromGroup)
 
 groupRouter.delete("/delete-groupes", authenticate,requireOnboarding,deleteGroup)
 groupRouter.patch("/:id",authenticate,requireOnboarding,updateGroup)

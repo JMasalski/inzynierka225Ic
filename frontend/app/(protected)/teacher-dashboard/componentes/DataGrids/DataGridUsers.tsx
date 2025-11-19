@@ -12,7 +12,7 @@ import ConfirmDeleteDialog from "@/app/(protected)/teacher-dashboard/componentes
 const DataGridUsers = () => {
 
     const {loading, getAllUsers, users, total, deleteUsers} = useUsersStore()
-    const {fetchGroupesToTable, groups, addStudentsToGroup} = useGroupStore()
+    const {fetchGroupesToTable, groups, addStudentsToGroup,removeStudentFromGroup} = useGroupStore()
 
     const [page, setPage] = useState(0);
     const [pageSize, setPageSize] = useState(10);
@@ -46,10 +46,10 @@ const DataGridUsers = () => {
     const handleProcessRowUpdate = async (newRow: User) => {
         try {
             const newGroupId = newRow.group?.id;
-            console.log(newGroupId, newRow.id, newRow.firstName)
-
             if (newGroupId) {
                 await addStudentsToGroup(newGroupId, [newRow.id]);
+            }else{
+                await removeStudentFromGroup([newRow.id]);
             }
 
             return newRow;
@@ -96,6 +96,7 @@ const DataGridUsers = () => {
             editable: true,
             type: "singleSelect",
             valueOptions: [
+                {value:"" ,label:"Brak grupy"},
                 ...groups.map(group => ({
                     value: group.id,
                     label: group.name
