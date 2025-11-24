@@ -68,6 +68,47 @@ export const getAllUsers = async (req, res) => {
     }
 };
 
+export const getUsersWithoutGroup = async (req,res)=>{
+    const requestingUser = req.user;
+
+    try {
+        if (
+            requestingUser.role !== ROLES.ROOT &&
+            requestingUser.role !== ROLES.TEACHER
+        ) {
+            return res.status(403).json({ message: "Brak uprawnień" });
+        }
+
+
+
+        const users = await prisma.user.findMany({
+            where:{
+                group: null,
+                role: {
+                    notIn:[ ROLES.ROOT,ROLES.TEACHER ],
+
+                }
+            },
+
+            select: {
+                id: true,
+                firstName: true,
+                lastName: true,
+                username: true
+            }
+        });
+
+
+        return res.status(200).json({
+            data: users,
+        });
+
+    } catch (err) {
+        console.log(err);
+        return res.status(500).json({ message: "Błąd serwera" });
+    }
+}
+
 export const deleteUsers = async (req, res) => {
     const requestingUser = req.user;
 

@@ -8,15 +8,17 @@ import {
     GridRowEditStopReasons, GridRowSelectionModel
 } from "@mui/x-data-grid";
 import {useGroupStore, GroupTableItem} from "@/store/useGroupStore";
-import {Search, TrashIcon} from "lucide-react";
+import {EditIcon, Search, TrashIcon} from "lucide-react";
 import {Input} from "@/components/ui/input";
 import useDebounce from "@/lib/useDebounce";
 
 import ConfirmDeleteDialog from "@/app/(protected)/teacher-dashboard/componentes/ConfirmDeleteDialog";
+import {Button} from "@/components/ui/button";
+import {useRouter} from "next/navigation";
 
 const DataGridGroupes = () => {
     const {groups, total, loading, fetchGroupesToTable, updateGroupName} = useGroupStore();
-
+    const router = useRouter();
     const [page, setPage] = useState(0);
     const [pageSize, setPageSize] = useState(10);
     const [sortModel, setSortModel] = useState<GridSortModel>([]);
@@ -87,13 +89,16 @@ const DataGridGroupes = () => {
             field: 'actions',
             headerName: 'Akcje',
             type: "actions",
-            width: 80,
+            width: 100,
             getActions: (params) => {
                 return [
                     <ConfirmDeleteDialog title={"Usuń grupę"}
                                          description={"Czy na pewno chcesz usunąć tą grupę? Ta akcja jest nieodwracalna."}
                                          onConfirmDelete={() => console.log([params.id])}
-                                         idsToDelete={[params.id]}/>
+                                         idsToDelete={[params.id]}/>,
+                    <Button variant={"ghost"} onClick={()=>router.push(`/group/${params.id}`)}>
+                        <EditIcon/>
+                    </Button>
                 ];
             }
 
