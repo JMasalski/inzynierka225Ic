@@ -22,6 +22,7 @@ type UsersState = {
     loading: boolean
     addUsers: (data: z.infer<typeof usersFormSchema>) => Promise<void>
     users: User[];
+    usersWithoutGroup: User[];
     total: number;
     deleteUsers: (ids: GridRowId[]) => Promise<void>;
     getAllUsers: (params: {
@@ -39,12 +40,14 @@ type UsersState = {
         sortField?: string | null,
         sortOrder?: "asc" | "desc" | null
     } | null;
+    getUsersWithoutGroup:()=>Promise<void>;
 }
 
 export const useUsersStore = create<UsersState>((set, get) => ({
 
     loading: false,
     users: [],
+    usersWithoutGroup:[],
     total: 0,
     lastQueryParams: null,
 
@@ -108,6 +111,21 @@ export const useUsersStore = create<UsersState>((set, get) => ({
         } finally {
             set({loading: false});
         }
+    },
+
+    getUsersWithoutGroup:async()=>{
+        try {
+            set({loading: true});
+            const res = await axiosInstance.get("api/v1/users/without-group")
+            set({usersWithoutGroup:res.data.data})
+        }
+        catch(e) {
+            console.log(e)
+            toast.error("Nie udało się pobrać użytkowników");
+        }finally {
+            set({loading: false});
+        }
+
     }
 
 }))
