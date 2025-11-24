@@ -39,14 +39,12 @@ const Page = () => {
     const [addStudentSearch, setAddStudentSearch] = useState("")
     const [selectedStudentIds, setSelectedStudentIds] = useState<string[]>([])
     const [isDialogOpen, setIsDialogOpen] = useState(false)
-
-    if (authUser?.role !== ROLES.TEACHER && authUser?.role !== ROLES.ROOT) {
-        router.replace("/home")
-        return null;
-    }
-
     const params = useParams();
     const groupId = params.id as string;
+
+
+
+
 
     useEffect(() => {
         if (!groupId) return;
@@ -56,6 +54,11 @@ const Page = () => {
     useEffect(() => {
         getUsersWithoutGroup();
     }, []);
+
+    if (authUser?.role !== ROLES.TEACHER && authUser?.role !== ROLES.ROOT) {
+        router.replace("/home")
+        return null;
+    }
 
     const filteredStudents = usersWithoutGroup.filter(student => {
         const searchLower = addStudentSearch.toLowerCase()
