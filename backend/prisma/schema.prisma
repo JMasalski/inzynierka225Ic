@@ -14,37 +14,37 @@ enum Role {
 }
 
 model User {
-  id                String   @id @default(uuid())
-  username          String   @unique
-  firstName         String?
-  lastName          String?
-  password          String
-  role              Role     @default(STUDENT)
-  hasOnboarded      Boolean  @default(false)
+  id                 String  @id @default(uuid())
+  username           String  @unique
+  firstName          String?
+  lastName           String?
+  password           String
+  role               Role    @default(STUDENT)
+  hasOnboarded       Boolean @default(false)
   createdByTeacherId String?
-  groupId           String?
+  groupId            String?
 
-  createdAt         DateTime @default(now())
-  updatedAt         DateTime? @updatedAt
+  createdAt DateTime  @default(now())
+  updatedAt DateTime? @updatedAt
 
-  // Relacje
-  createdByTeacher  User?     @relation("TeacherStudents", fields: [createdByTeacherId], references: [id])
-  students          User[]    @relation("TeacherStudents")
+  // Relacja: nauczyciel który stworzył użytkownika
+  createdByTeacher User? @relation("TeacherStudents", fields: [createdByTeacherId], references: [id])
 
-  group             Group?    @relation(fields: [groupId], references: [id])
-  teachingGroups    Group[]   @relation("TeacherGroups")
+  // Relacja: lista uczniów stworzonych przez nauczyciela
+  students User[] @relation("TeacherStudents")
+
+  // Relacja z grupą
+  group Group? @relation("GroupStudents", fields: [groupId], references: [id], onDelete: SetNull)
 
   @@index([role])
 }
 
 model Group {
-  id          String   @id @default(uuid())
-  name        String
-  teacherId   String
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  id        String   @id @default(uuid())
+  name      String   @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
-  //Relacje
-  teacher     User     @relation("TeacherGroups", fields: [teacherId], references: [id])
-  students    User[]
+  // Relacja: lista uczniów należących do grupy
+  students User[] @relation("GroupStudents")
 }

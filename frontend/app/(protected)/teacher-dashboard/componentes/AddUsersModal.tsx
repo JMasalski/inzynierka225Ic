@@ -33,7 +33,6 @@ const AddUsersModal = ({open, onOpenChange}: AddUsersModalProps) => {
     const onSubmit = async (values: z.infer<typeof usersFormSchema>) => {
         try {
             addUsers(values)
-            console.log(values)
             onOpenChange(false)
         } catch (error) {
             console.log(error)
