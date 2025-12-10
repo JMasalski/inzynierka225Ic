@@ -5,19 +5,20 @@ export const generateTemplates = (
     setTask: (task: Task) => void,
     setShowCodeBluePrint: (v: boolean) => void
 ) => {
-    const { name, params, return_type, return_element_type } = task.function_signature;
+    const {name, params, return_type, return_element_type} = task.function_signature;
 
     if (!name || params.length === 0) {
         alert("Najpierw zdefiniuj nazwę funkcji i parametry");
         return;
     }
 
-    let allParams = [...params];
-    params.forEach((param, index) => {
+    let allParams: any[] = [];
+    params.forEach((param) => {
+        allParams.push(param);
         if (param.type === 'array' && param.size_param) {
             const sizeExists = allParams.some(p => p.name === param.size_param);
             if (!sizeExists) {
-                allParams.splice(index + 1, 0, {
+                allParams.push({
                     name: param.size_param,
                     type: 'int'
                 });

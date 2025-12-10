@@ -8,16 +8,29 @@ import FunctionSignatureCard from "@/app/(protected)/teacher-dashboard/new-task/
 import BasicInfoCard from "@/app/(protected)/teacher-dashboard/new-task/components/BasicInfoCard";
 import TestCasesCard from "@/app/(protected)/teacher-dashboard/new-task/components/TestCasesCard";
 
+interface FunctionParameter {
+    name: string;
+    type: string;
+    element_type?: string;
+    size_param?: string;
+    allowSpaces?: boolean;
+}
+
+interface TestCase {
+    input: string;
+    expected_output: string;
+}
+
 export type Task = {
     title: string;
     description: string;
     function_signature: {
         name: string;
-        params: any[];
+        params: FunctionParameter[];
         return_type: string;
         return_element_type: string | null;
     };
-    test_cases: any[];
+    test_cases: TestCase[];
     templates: {
         cpp: string;
         python: string;
@@ -89,6 +102,7 @@ const Page = () => {
             />
 
             <Button onClick={() => console.log(task)}>cwl</Button>
+            {/* TODO: Dodac test i zapis i anuluj */}
         </div>
     );
 };
