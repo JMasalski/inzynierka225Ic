@@ -262,10 +262,17 @@ rl.on('line', (line) => {
 
         jsParseCode = `rl.on('line', (input) => {
     const parts = input.split(' ');
-    ${parts};
-    ${jsCallCode}
+
+    ${allParams
+            .map((p, i) => `const ${p.name} = ${getJsConversion(p.type)}(parts[${i}]);`)
+            .join('\n    ')}
+
+    ${isReturningArray
+            ? `const result = ${name}(${allParams.map(p => p.name).join(', ')});\n    console.log(result.join(' '));`
+            : `console.log(${name}(${allParams.map(p => p.name).join(', ')}));`}
+
     rl.close();
-});`;
+});`
     }
 
     const javascriptBoilerplate = `
