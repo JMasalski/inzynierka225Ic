@@ -125,7 +125,7 @@ export const generateTemplates = (
     ).join(', ');
 
     let cppOutput = '';
-    if (isVoid && arrayParam) {
+    if (isVoid && arrayParam && sizeParam) {
         cppOutput = `    ${name}(${cppCallParams});
     for(int i = 0; i < ${sizeParam?.name}; i++) {
         if(i > 0) cout << " ";
