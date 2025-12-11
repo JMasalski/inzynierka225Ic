@@ -42,15 +42,12 @@ const BasicInfoCard = ({
     const [selectedGroupIds, setSelectedGroupIds] = useState<string[]>(groupIds);
 
     useEffect(() => {
-        console.log("starting fetching")
-
         fetchGroupesToTable({page: 0, pageSize: 1000})
     }, []);
 
-
     useEffect(() => {
-        console.log("Aktualne grupy:", groups);
-    }, [groups]);
+        setSelectedGroupIds(groupIds);
+    }, [groupIds]);
 
     return (
         <Card>

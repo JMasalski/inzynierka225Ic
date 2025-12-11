@@ -13,7 +13,7 @@ import {isTeacherOrRoot} from "../middleware/isTeacherOrRoot.js";
 const groupRouter = Router();
 
 groupRouter.get("/", authenticate,requireOnboarding,isTeacherOrRoot,getAllGroupes)
-groupRouter.get("/:id", authenticate,requireOnboarding,getGroup)
+groupRouter.get("/:id", authenticate,requireOnboarding,isTeacherOrRoot,getGroup)
 groupRouter.post("/create-group",authenticate,requireOnboarding, isTeacherOrRoot,createGroup)
 groupRouter.post("/:id/add-students",authenticate,requireOnboarding,isTeacherOrRoot ,addStudentToGroup)
 groupRouter.post("/remove-students",authenticate,requireOnboarding ,isTeacherOrRoot,removeStudentFromGroup)
