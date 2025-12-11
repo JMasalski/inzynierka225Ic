@@ -30,6 +30,7 @@ export type Task = {
         return_type: string;
         return_element_type: string | null;
     };
+    isActive:boolean;
     test_cases: TestCase[];
     templates: {
         cpp: string;
@@ -41,6 +42,7 @@ export type Task = {
         python: string;
         javascript: string;
     }
+    groupIds: string[];
 };
 
 const Page = () => {
@@ -53,6 +55,8 @@ const Page = () => {
             return_type: 'int',
             return_element_type: null
         },
+        isActive: false,
+        groupIds: [],
         test_cases: [],
         templates: {
             cpp: '',
@@ -77,8 +81,13 @@ const Page = () => {
             <BasicInfoCard
                 title={task.title}
                 description={task.description}
+                isActive = {task.isActive}
+                groupIds={task.groupIds}
+
                 onTitleChange={(title) => setTask({ ...task, title })}
                 onDescriptionChange={(description) => setTask({ ...task, description })}
+                onIsActiveChange={(isActive) => setTask({ ...task, isActive })}
+                onGroupIdsChange={(groupIds) => setTask({ ...task, groupIds })}
             />
 
             <FunctionSignatureCard
@@ -101,7 +110,10 @@ const Page = () => {
                 onTestCasesChange={(test_cases) => setTask({ ...task, test_cases })}
             />
 
-            <Button onClick={() => console.log(task)}>cwl</Button>
+            <Button onClick={() => {
+                generateTemplates(task, setTask, setShowCodeBluePrint);
+                console.log(task)
+            }}>cwl</Button>
             {/* TODO: Dodac test i zapis i anuluj */}
         </div>
     );

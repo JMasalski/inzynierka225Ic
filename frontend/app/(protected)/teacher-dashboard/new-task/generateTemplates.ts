@@ -202,7 +202,7 @@ ${cppInput}
 #Ten kod jest niewidoczny dla ucznia. Służy on do wykonywania testów.
 if __name__ == "__main__":
 ${pyInput}
-    ${pyOutput}`;
+${pyOutput}`;
 
     // JavaScript boilerplate
     let jsParseCode = '';
