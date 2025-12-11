@@ -23,7 +23,7 @@ export const createNewTask = async (req, res) => {
         ) {
             return res.status(400).json({ message: "Brakuje wymaganych danych do stworzenia zadania." });
         }
-
+        const safeGroupIds = Array.isArray(groupIds) ? groupIds : [];
         const task = await prisma.task.create({
             data:{
                 title,
@@ -33,12 +33,12 @@ export const createNewTask = async (req, res) => {
                 templates,
                 boilerplates,
                 groups: {
-                    connect:groupIds.map((id)=>({id}))
+                    connect:safeGroupIds.map((id)=>({id}))
                 },
                 createdById: requestingUser.id,
             }
         })
-        res.status(200).json({meesage:"Zadanie utworzone",task:task})
+        res.status(201).json({meesage:"Zadanie utworzone",task:task})
 
     } catch (err) {
         console.log(err)
