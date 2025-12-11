@@ -36,6 +36,8 @@ model User {
   // Relacja z grupą
   group Group? @relation("GroupStudents", fields: [groupId], references: [id], onDelete: SetNull)
 
+  tasks Task[] @relation("TeacherTask")
+
   @@index([role])
 }
 
@@ -47,4 +49,28 @@ model Group {
 
   // Relacja: lista uczniów należących do grupy
   students User[] @relation("GroupStudents")
+
+  tasks Task[] @relation("TaskGroups")
+}
+
+model Task {
+  id          String @id @default(uuid())
+  title       String
+  description String
+
+  // Wszystkie części zadania
+  function_signature Json
+  test_cases         Json
+  templates          Json
+  boilerplates       Json
+
+  isActive Boolean @default(false)
+
+  groups      Group[] @relation("TaskGroups")
+  // Relacja z nauczycielem który stworzył to zadanie
+  createdById String?
+  createdBy   User?   @relation("TeacherTask", fields: [createdById], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }

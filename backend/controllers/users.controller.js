@@ -2,15 +2,9 @@ import { ROLES } from "../lib/roles.js";
 import prisma from "../lib/prismaClient.js";
 
 export const getAllUsers = async (req, res) => {
-    const requestingUser = req.user;
 
     try {
-        if (
-            requestingUser.role !== ROLES.ROOT &&
-            requestingUser.role !== ROLES.TEACHER
-        ) {
-            return res.status(403).json({ message: "Brak uprawnień" });
-        }
+
 
         const page = Number(req.query.page ?? 0);
         const pageSize = Number(req.query.pageSize ?? 10);
@@ -69,15 +63,9 @@ export const getAllUsers = async (req, res) => {
 };
 
 export const getUsersWithoutGroup = async (req,res)=>{
-    const requestingUser = req.user;
 
     try {
-        if (
-            requestingUser.role !== ROLES.ROOT &&
-            requestingUser.role !== ROLES.TEACHER
-        ) {
-            return res.status(403).json({ message: "Brak uprawnień" });
-        }
+
 
 
 
@@ -110,12 +98,9 @@ export const getUsersWithoutGroup = async (req,res)=>{
 }
 
 export const deleteUsers = async (req, res) => {
-    const requestingUser = req.user;
 
     try {
-        if (requestingUser.role !== ROLES.ROOT && requestingUser.role !== ROLES.TEACHER) {
-            return res.status(403).json({ message: "Nie masz uprawnień do usuwania użytkowników." });
-        }
+
 
         const { usersIds } = req.body;
 
