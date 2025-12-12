@@ -1,12 +1,13 @@
 "use client"
-import React, { useState } from 'react';
-import { Button } from "@/components/ui/button";
-import { generateTemplates } from "@/app/(protected)/teacher-dashboard/new-task/generateTemplates";
+import React, {useState} from 'react';
+import {Button} from "@/components/ui/button";
+import {generateTemplates} from "@/app/(protected)/teacher-dashboard/new-task/generateTemplates";
 
-import { CodePreviewCard } from './components/CodePreviewCard';
+import {CodePreviewCard} from './components/CodePreviewCard';
 import FunctionSignatureCard from "@/app/(protected)/teacher-dashboard/new-task/components/FunctionSignatureCard";
 import BasicInfoCard from "@/app/(protected)/teacher-dashboard/new-task/components/BasicInfoCard";
 import TestCasesCard from "@/app/(protected)/teacher-dashboard/new-task/components/TestCasesCard";
+import {useTaskStore} from "@/store/useTaskStore";
 
 interface FunctionParameter {
     name: string;
@@ -22,6 +23,7 @@ interface TestCase {
 }
 
 export type Task = {
+    id?: string;
     title: string;
     description: string;
     function_signature: {
@@ -30,6 +32,7 @@ export type Task = {
         return_type: string;
         return_element_type: string | null;
     };
+    isActive: boolean;
     test_cases: TestCase[];
     templates: {
         cpp: string;
@@ -41,6 +44,7 @@ export type Task = {
         python: string;
         javascript: string;
     }
+    groupIds: string[];
 };
 
 const Page = () => {
@@ -53,6 +57,8 @@ const Page = () => {
             return_type: 'int',
             return_element_type: null
         },
+        isActive: false,
+        groupIds: [],
         test_cases: [],
         templates: {
             cpp: '',
@@ -68,8 +74,16 @@ const Page = () => {
 
     const [showCodeBluePrint, setShowCodeBluePrint] = useState(false);
 
+    const {addTask, loading} = useTaskStore()
+
     const handleGenerateTemplates = () => {
-        generateTemplates(task, setTask, setShowCodeBluePrint);
+        try {
+            const nextTask = generateTemplates(task);
+            setTask(nextTask);
+            setShowCodeBluePrint(true);
+        } catch (err: any) {
+            alert(err.message);
+        }
     };
 
     return (
@@ -77,13 +91,18 @@ const Page = () => {
             <BasicInfoCard
                 title={task.title}
                 description={task.description}
-                onTitleChange={(title) => setTask({ ...task, title })}
-                onDescriptionChange={(description) => setTask({ ...task, description })}
+                isActive={task.isActive}
+                groupIds={task.groupIds}
+
+                onTitleChange={(title) => setTask({...task, title})}
+                onDescriptionChange={(description) => setTask({...task, description})}
+                onIsActiveChange={(isActive) => setTask({...task, isActive})}
+                onGroupIdsChange={(groupIds) => setTask({...task, groupIds})}
             />
 
             <FunctionSignatureCard
                 functionSignature={task.function_signature}
-                onSignatureChange={(function_signature) => setTask({ ...task, function_signature })}
+                onSignatureChange={(function_signature) => setTask({...task, function_signature})}
                 onGenerateTemplates={handleGenerateTemplates}
             />
 
@@ -98,11 +117,25 @@ const Page = () => {
             <TestCasesCard
                 testCases={task.test_cases}
                 functionSignature={task.function_signature}
-                onTestCasesChange={(test_cases) => setTask({ ...task, test_cases })}
+                onTestCasesChange={(test_cases) => setTask({...task, test_cases})}
             />
 
-            <Button onClick={() => console.log(task)}>cwl</Button>
-            {/* TODO: Dodac test i zapis i anuluj */}
+            <Button onClick={async () => {
+                try {
+                    const nextTask = generateTemplates(task);
+                    setTask(nextTask);
+                    setShowCodeBluePrint(true);
+
+                    await addTask(nextTask);
+                } catch (err:any) {
+                    alert(err.message);
+                }
+            }}
+            >
+                Dodaj zadanie</Button>
+            {/*TODO: Dodac test i zapis i anuluj
+              TODO: Poprawic error handling i sprawdzenie formularza
+              */}
         </div>
     );
 };

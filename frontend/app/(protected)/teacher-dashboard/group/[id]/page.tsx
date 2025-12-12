@@ -42,10 +42,6 @@ const Page = () => {
     const params = useParams();
     const groupId = params.id as string;
 
-
-
-
-
     useEffect(() => {
         if (!groupId) return;
         fetchSingleGroup(groupId);

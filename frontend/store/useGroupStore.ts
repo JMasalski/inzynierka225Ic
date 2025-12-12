@@ -59,6 +59,8 @@ export const useGroupStore = create<GroupState>((set,get) => ({
 
     fetchGroupesToTable: async (params) => {
         try {
+            console.log("START FETCH GROUPS", params);
+
             set({ loading: true });
 
             const res = await axiosInstance.get<GroupTableResponse>("/api/v1/group", { params });
@@ -67,6 +69,8 @@ export const useGroupStore = create<GroupState>((set,get) => ({
                 groups: res.data.data,
                 total: res.data.total
             });
+            console.log("FETCH RESULT:", res.data);
+
         } catch (e) {
             console.error(e);
         } finally {

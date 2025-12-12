@@ -96,7 +96,7 @@ const DataGridGroupes = () => {
                                          description={"Czy na pewno chcesz usunąć tą grupę? Ta akcja jest nieodwracalna."}
                                          onConfirmDelete={() => console.log([params.id])}
                                          idsToDelete={[params.id]}/>,
-                    <Button variant={"ghost"} onClick={()=>router.push(`/group/${params.id}`)}>
+                    <Button variant={"ghost"} onClick={()=>router.push(`/teacher-dashboard/group/${params.id}`)}>
                         <EditIcon/>
                     </Button>
                 ];
