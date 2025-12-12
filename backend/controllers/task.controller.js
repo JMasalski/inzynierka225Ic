@@ -1,4 +1,5 @@
 import prisma from "../lib/prismaClient.js";
+import {ROLES} from "../lib/roles.js";
 
 export const createNewTask = async (req, res) => {
     try {
@@ -22,11 +23,11 @@ export const createNewTask = async (req, res) => {
             !templates ||
             !boilerplates
         ) {
-            return res.status(400).json({ message: "Brakuje wymaganych danych do stworzenia zadania." });
+            return res.status(400).json({message: "Brakuje wymaganych danych do stworzenia zadania."});
         }
         const safeGroupIds = Array.isArray(groupIds) ? groupIds : [];
         const task = await prisma.task.create({
-            data:{
+            data: {
                 title,
                 description,
                 function_signature,
@@ -35,16 +36,16 @@ export const createNewTask = async (req, res) => {
                 boilerplates,
                 isActive,
                 groups: {
-                    connect:safeGroupIds.map((id)=>({id}))
+                    connect: safeGroupIds.map((id) => ({id}))
                 },
                 createdById: requestingUser.id,
             }
         })
-        res.status(201).json({message:"Zadanie utworzone pomyślnie",task:task})
+        res.status(201).json({message: "Zadanie utworzone pomyślnie", task: task})
 
     } catch (err) {
         console.log(err)
-        return res.status(500).json({ message: "Wystąpił błąd serwera." });
+        return res.status(500).json({message: "Wystąpił błąd serwera."});
     }
 }
 
@@ -56,15 +57,19 @@ export const getAllTasks = async (req, res) => {
             }
         });
         res.status(200).json(tasks)
-    }catch(err){
+    } catch (err) {
         console.log(err)
-        return res.status(500).json({message:"Wystąpił błąd serwera."});
+        return res.status(500).json({message: "Wystąpił błąd serwera."});
     }
 }
 
 export const getStudentTask = async (req, res) => {
     const requestingUser = req.user
+
     try {
+        if (!requestingUser.groupId) {
+            return res.status(200).json([]);
+        }
         const tasks = await prisma.task.findMany({
             where: {
                 groups: {
@@ -76,23 +81,35 @@ export const getStudentTask = async (req, res) => {
             }
         });
         res.status(200).json(tasks)
-    }catch(err){
+    } catch (err) {
         console.log(err)
-        res.status(500).json({message:"Wystąpił błąd podczas pobierania zadań."})
+        res.status(500).json({message: "Wystąpił błąd podczas pobierania zadań."})
 
     }
 }
 
 export const getIndividualTask = async (req, res) => {
-    try{
-        const task = await prisma.task.findFirst({
+    const requestingUser = req.user
+    try {
+        const task = await prisma.task.findUnique({
             where: {
                 id: req.params.id
             }
         })
+        if (!task) {
+            return res.status(404).json({message: "Zadanie nie zostało znalezione."});
+        }
+        if (requestingUser.role === ROLES.STUDENT) {
+            const hasAccess = task.isActive &&
+                requestingUser.groupId &&
+                task.groups?.some(g => g.id === requestingUser.groupId);
+            if (!hasAccess) {
+                return res.status(403).json({message: "Brak dostępu do tego zadania."});
+            }
+        }
         res.status(200).json(task)
-    }catch(err){
+    } catch (err) {
         console.log(err)
-        res.status(500).json({message:"Wystąpił błąd podczas pobierania zadania."})
+        res.status(500).json({message: "Wystąpił błąd podczas pobierania zadania."})
     }
 }

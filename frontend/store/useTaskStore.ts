@@ -4,64 +4,61 @@ import {axiosInstance} from "@/lib/axiosInstance";
 import {toast} from "sonner";
 
 
-
 type TaskState = {
     addTask: (data: Task) => Promise<void>;
     getStudentTasks: () => Promise<void>;
-    getIndividualTask: (id:string) => Promise<void>;
+    getIndividualTask: (id: string) => Promise<void>;
     loading: boolean;
-    studentTasks:Task[]
-    individualTask:Task | null
+    studentTasks: Task[]
+    individualTask: Task | null
 }
 export const useTaskStore = create<TaskState>((set) => ({
-    loading:false,
-    studentTasks:[],
-    individualTask:null,
-    addTask:async(data)=>{
+    loading: false,
+    studentTasks: [],
+    individualTask: null,
+    addTask: async (data) => {
         try {
-            set({loading:true});
-            const res = await axiosInstance.post("/api/v1/task",data)
+            set({loading: true});
+            const res = await axiosInstance.post("/api/v1/task", data)
             console.log(res)
             toast.success(res.data.message)
 
-        }catch(error:any){
+        } catch (error: any) {
             console.log(error);
-            toast.error(error.data.message)
+            toast.error(error.response?.data?.message || "Wystąpił błąd podczas tworzenia zadania.")
 
-        }finally{
-            set({loading:false});
+        } finally {
+            set({loading: false});
         }
     },
-    getStudentTasks:async()=>{
-        try{
-            set({loading:true})
+    getStudentTasks: async () => {
+        try {
+            set({loading: true})
             const res = await axiosInstance.get("/api/v1/task/student-task")
             console.log(res)
             set({studentTasks: res.data})
 
-        }catch (e)
-        {
+        } catch (e) {
             console.log(e)
 
-        }finally {
-            set({loading:false})
+        } finally {
+            set({loading: false})
         }
     },
 
-    getIndividualTask:async(id)=>
-    {
-        try{
-            set({loading:true})
+    getIndividualTask: async (id) => {
+        try {
+            set({loading: true})
             const res = await axiosInstance.get(`api/v1/task/${id}`)
             console.log(res)
-            set({individualTask:res.data})
+            set({individualTask: res.data})
 
-        }catch (e){
+        } catch (e) {
             console.log(e)
 
 
-        }finally {
-            set({loading:false});
+        } finally {
+            set({loading: false});
 
         }
     }
