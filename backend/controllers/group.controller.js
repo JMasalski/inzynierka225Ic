@@ -1,15 +1,11 @@
 import prisma from "../lib/prismaClient.js";
-import {ROLES} from "../lib/roles.js";
 
 //TODO PODODAWAC ERROR HANDLING
 
 export const getAllGroupes = async (req, res) => {
-    const requestingUser = req.user;
 
     try {
-        if (requestingUser.role !== ROLES.ROOT && requestingUser.role !== ROLES.TEACHER) {
-            return res.status(403).json({message: "Brak uprawnień"});
-        }
+
 
         const page = Number(req.query.page) || 0;
         const pageSize = Number(req.query.pageSize) || 10;
@@ -62,11 +58,8 @@ export const getAllGroupes = async (req, res) => {
     }
 };
 export const getGroup = async (req, res) => {
-    const requestingUser = req.user;
     try {
-        if (requestingUser.role !== ROLES.ROOT && requestingUser.role !== ROLES.TEACHER) {
-            return res.status(403).json({message: "Nie masz uprawnień by dodawać do grup"});
-        }
+
         const group = await prisma.group.findUnique({
             where: {id: req.params.id},
             select: {
@@ -95,12 +88,9 @@ export const getGroup = async (req, res) => {
 }
 export const createGroup = async (req, res) => {
     const {name} = req.body;
-    const requestingUser = req.user;
 
     try {
-        if (requestingUser.role !== ROLES.ROOT && requestingUser.role !== ROLES.TEACHER) {
-            return res.status(403).json({message: "Nie masz uprawnień by utworzyć grupę"});
-        }
+
 
         if (!name || !name.trim()) {
             return res.status(400).json({message: "Nazwa grupy jest wymagana."});
@@ -132,13 +122,10 @@ export const createGroup = async (req, res) => {
 };
 
 export const addStudentToGroup = async (req, res) => {
-    const requestingUser = req.user;
     const {studentsIds} = req.body;
     const groupId = req.params.id;
     try {
-        if (requestingUser.role !== ROLES.ROOT && requestingUser.role !== ROLES.TEACHER) {
-            return res.status(403).json({message: "Nie masz uprawnień by dodawać do grup"});
-        }
+
         const existingGroup = await prisma.group.findUnique({
             where: {id: groupId}
         })
@@ -165,12 +152,9 @@ export const addStudentToGroup = async (req, res) => {
 }
 
 export const deleteGroup = async (req, res) => {
-    const requestingUser = req.user;
 
     try {
-        if (requestingUser.role !== ROLES.ROOT && requestingUser.role !== ROLES.TEACHER) {
-            return res.status(403).json({message: "Nie masz uprawnień do usuwania grup."});
-        }
+
 
         const {groupIds} = req.body;
 
@@ -202,16 +186,12 @@ export const deleteGroup = async (req, res) => {
     }
 };
 export const removeStudentFromGroup = async (req, res) => {
-    const requestingUser = req.user;
-    console.log("BODY:",req.body)
 
     const { studentsIds } = req.body;
     
 
     try {
-        if (requestingUser.role !== ROLES.ROOT && requestingUser.role !== ROLES.TEACHER) {
-            return res.status(403).json({ message: "Nie masz uprawnień by usuwać uczniów z grupy." });
-        }
+
 
         if (!Array.isArray(studentsIds) || studentsIds.length === 0) {
             return res.status(400).json({ message: "Musisz podać listę identyfikatorów uczniów." });
@@ -233,12 +213,9 @@ export const removeStudentFromGroup = async (req, res) => {
     }
 };
 export const updateGroup = async (req, res) => {
-    const requestingUser = req.user;
     const {name} = req.body;
     try {
-        if (requestingUser.role !== ROLES.ROOT && requestingUser.role !== ROLES.TEACHER) {
-            return res.status(403).json({message: "Nie masz uprawnień do edytowania grup"});
-        }
+
         if (!name || !name.trim()) {
             return res.status(400).json({message: "Nazwa grupy jest wymagana."});
         }
