@@ -64,7 +64,7 @@ model Task {
   templates          Json
   boilerplates       Json
 
-  isActive Boolean @default(false)
+  isActive Boolean
 
   groups      Group[] @relation("TaskGroups")
   // Relacja z nauczycielem który stworzył to zadanie

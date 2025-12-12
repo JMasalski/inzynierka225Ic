@@ -10,7 +10,8 @@ export const createNewTask = async (req, res) => {
             test_cases,
             templates,
             boilerplates,
-            groupIds
+            groupIds,
+            isActive
         } = req.body
 
         if (
@@ -32,13 +33,14 @@ export const createNewTask = async (req, res) => {
                 test_cases,
                 templates,
                 boilerplates,
+                isActive,
                 groups: {
                     connect:safeGroupIds.map((id)=>({id}))
                 },
                 createdById: requestingUser.id,
             }
         })
-        res.status(201).json({meesage:"Zadanie utworzone",task:task})
+        res.status(201).json({message:"Zadanie utworzone pomyślnie",task:task})
 
     } catch (err) {
         console.log(err)
@@ -57,5 +59,40 @@ export const getAllTasks = async (req, res) => {
     }catch(err){
         console.log(err)
         return res.status(500).json({message:"Wystąpił błąd serwera."});
+    }
+}
+
+export const getStudentTask = async (req, res) => {
+    const requestingUser = req.user
+    try {
+        const tasks = await prisma.task.findMany({
+            where: {
+                groups: {
+                    some: {
+                        id: requestingUser.groupId
+                    }
+                },
+                isActive: true
+            }
+        });
+        res.status(200).json(tasks)
+    }catch(err){
+        console.log(err)
+        res.status(500).json({message:"Wystąpił błąd podczas pobierania zadań."})
+
+    }
+}
+
+export const getIndividualTask = async (req, res) => {
+    try{
+        const task = await prisma.task.findFirst({
+            where: {
+                id: req.params.id
+            }
+        })
+        res.status(200).json(task)
+    }catch(err){
+        console.log(err)
+        res.status(500).json({message:"Wystąpił błąd podczas pobierania zadania."})
     }
 }

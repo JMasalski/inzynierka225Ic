@@ -7,6 +7,7 @@ import { CodePreviewCard } from './components/CodePreviewCard';
 import FunctionSignatureCard from "@/app/(protected)/teacher-dashboard/new-task/components/FunctionSignatureCard";
 import BasicInfoCard from "@/app/(protected)/teacher-dashboard/new-task/components/BasicInfoCard";
 import TestCasesCard from "@/app/(protected)/teacher-dashboard/new-task/components/TestCasesCard";
+import {useTaskStore} from "@/store/useTaskStore";
 
 interface FunctionParameter {
     name: string;
@@ -22,6 +23,7 @@ interface TestCase {
 }
 
 export type Task = {
+    id?:string;
     title: string;
     description: string;
     function_signature: {
@@ -72,6 +74,8 @@ const Page = () => {
 
     const [showCodeBluePrint, setShowCodeBluePrint] = useState(false);
 
+    const {addTask,loading} = useTaskStore()
+
     const handleGenerateTemplates = () => {
         generateTemplates(task, setTask, setShowCodeBluePrint);
     };
@@ -110,11 +114,14 @@ const Page = () => {
                 onTestCasesChange={(test_cases) => setTask({ ...task, test_cases })}
             />
 
-            <Button onClick={() => {
+            <Button disabled={loading} onClick={() => {
                 generateTemplates(task, setTask, setShowCodeBluePrint);
                 console.log(task)
-            }}>cwl</Button>
-            {/* TODO: Dodac test i zapis i anuluj */}
+                addTask(task)
+            }}>Dodaj zadanie</Button>
+             {/*TODO: Dodac test i zapis i anuluj
+              TODO: Poprawic error handling i sprawdzenie formularza
+              */}
         </div>
     );
 };

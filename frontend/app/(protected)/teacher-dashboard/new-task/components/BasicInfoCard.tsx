@@ -49,6 +49,14 @@ const BasicInfoCard = ({
         setSelectedGroupIds(groupIds);
     }, [groupIds]);
 
+    const toggleGroup = (groupId: string) => {
+        setSelectedGroupIds(prev =>
+            prev.includes(groupId)
+                ? prev.filter(id => id !== groupId)
+                : [...prev, groupId]
+        );
+    };
+
     return (
         <Card>
             <CardHeader>
@@ -88,13 +96,13 @@ const BasicInfoCard = ({
                     <Dialog>
                         <DialogTrigger asChild>
                             <Button variant="outline">
-                                Wybierz grupy ({selectedGroupIds.length})
+                                Przydziel grupy ({selectedGroupIds.length})
                             </Button>
                         </DialogTrigger>
 
                         <DialogContent className="max-w-md">
                             <DialogHeader>
-                                <DialogTitle>Wybierz grupy</DialogTitle>
+                                <DialogTitle>Przydziel grupy</DialogTitle>
                                 <DialogDescription>
                                     Zaznacz grupy, którym chcesz przypisać to zadanie.
                                 </DialogDescription>
@@ -110,24 +118,10 @@ const BasicInfoCard = ({
                                         <div
                                             key={group.id}
                                             className="flex items-center gap-3 p-3 hover:bg-muted/40 cursor-pointer"
-                                            onClick={() => {
-                                                if (selectedGroupIds.includes(group.id)) {
-                                                    setSelectedGroupIds(selectedGroupIds.filter(id => id !== group.id));
-                                                } else {
-                                                    setSelectedGroupIds([...selectedGroupIds, group.id]);
-                                                }
-                                            }}
+                                            onClick={() =>  toggleGroup(group.id)}
                                         >
                                             <Checkbox
                                                 checked={selectedGroupIds.includes(group.id)}
-                                                onCheckedChange={() => {
-                                                    if (selectedGroupIds.includes(group.id)) {
-                                                        setSelectedGroupIds(selectedGroupIds.filter(id => id !== group.id));
-                                                    } else {
-                                                        setSelectedGroupIds([...selectedGroupIds, group.id]);
-                                                    }
-                                                }}
-                                                onClick={(e) => e.stopPropagation()}
                                             />
                                             <span className="font-medium">{group.name}</span>
                                         </div>
@@ -135,12 +129,12 @@ const BasicInfoCard = ({
                                 )}
                             </div>
                             <DialogFooter>
+                                <Button variant={"destructive"} onClick={()=>setSelectedGroupIds([])}>
+                                    Odznacz wszystkich
+                                </Button>
                                 <DialogClose asChild>
                                     <Button
-                                        onClick={() => {
-                                            onGroupIdsChange(selectedGroupIds); // ➜ musimy dodać tę funkcję do propsów
-                                        }}
-                                    >
+                                        onClick={() => onGroupIdsChange(selectedGroupIds)}>
                                         Zapisz ({selectedGroupIds.length})
                                     </Button>
                                 </DialogClose>
