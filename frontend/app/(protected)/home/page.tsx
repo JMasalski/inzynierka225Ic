@@ -13,7 +13,7 @@ export default function Page() {
 
     useEffect(() => {
         getStudentTasks()
-    }, [])
+    }, [getStudentTasks])
 
     if (loading) return <Loader/>
 
@@ -38,7 +38,7 @@ export default function Page() {
     return (
         <div className="grid grid-cols-4 gap-5">
             {studentTasks.map((task) => (
-                <div>
+                <div key={task.id}>
                     {task.title}
                     <Button onClick={()=>router.push(`/code-page/${task.id}`)}>
                         Rozwiąż

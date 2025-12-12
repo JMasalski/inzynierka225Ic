@@ -11,7 +11,7 @@ const Page = () => {
     const{getIndividualTask,individualTask,loading} = useTaskStore()
     useEffect(() => {
         getIndividualTask(taskId)
-    },[taskId])
+    },[taskId,getIndividualTask])
 
 
     if (loading) return <Loader/>

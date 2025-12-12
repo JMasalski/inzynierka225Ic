@@ -1,20 +1,24 @@
 import {Task} from "@/app/(protected)/teacher-dashboard/new-task/page";
 
-export const generateTemplates = (
-    task: Task,
-    setTask: (task: Task) => void,
-    setShowCodeBluePrint: (v: boolean) => void
-) => {
+export const generateTemplates = (task: Task): Task => {
     const {name, params, return_type, return_element_type} = task.function_signature;
 
-    if (!name || params.length === 0) {
-        alert("Najpierw zdefiniuj nazwę funkcji i parametry");
-        return;
+    if (!name) {
+        throw new Error("Function name is required");
     }
+
+    if (params.length === 0) {
+        throw new Error("Najpierw dodaj przynajmniej jeden parametr funkcji");
+    }
+
+    // ------------------------------------------------------
+    // PARAMS PREPROCESSING
+    // ------------------------------------------------------
 
     let allParams: any[] = [];
     params.forEach((param) => {
         allParams.push(param);
+
         if (param.type === 'array' && param.size_param) {
             const sizeExists = allParams.some(p => p.name === param.size_param);
             if (!sizeExists) {
@@ -31,11 +35,11 @@ export const generateTemplates = (
     const isVoid = return_type === 'void';
     const isReturningArray = return_type === 'array';
 
-    // ============================================
-    // CZĘŚĆ WIDOCZNA DLA STUDENTA (edytowalna)
-    // ============================================
+    // ------------------------------------------------------
+    // STUDENT CODE (templates)
+    // ------------------------------------------------------
 
-    // C++ - tylko sygnatura funkcji
+    // --------- C++ ---------
     const cppParams = allParams.map(p =>
         p.type === 'array'
             ? `${getCppType(p.element_type)} ${p.name}[]`
@@ -60,11 +64,12 @@ export const generateTemplates = (
     if (arrayParam || isReturningArray) cppIncludes += '#include <vector>\n';
     if (allParams.some(p => p.type === 'string')) cppIncludes += '#include <string>\n';
     cppIncludes += 'using namespace std;\n\n';
+
     const cppStudentCode = `${cppIncludes}${cppReturnType} ${name}(${cppParams}) {
     // Twoja funkcja${cppFunctionBody}
 }`;
 
-    // Python - tylko definicja funkcji
+    // --------- PYTHON ---------
     const pyParams = allParams
         .filter(p => !(sizeParam && p.name === sizeParam.name))
         .map(p => p.name)
@@ -73,9 +78,9 @@ export const generateTemplates = (
     const pyFunctionBody = isVoid ? '' : '\n    pass';
 
     const pythonStudentCode = `def ${name}(${pyParams}):
-    #Twoja funkcja${pyFunctionBody}`;
+    # Twoja funkcja${pyFunctionBody}`;
 
-    // JavaScript - tylko definicja funkcji
+    // --------- JAVASCRIPT ---------
     const jsParams = allParams
         .filter(p => !(sizeParam && p.name === sizeParam.name))
         .map(p => p.name)
@@ -90,14 +95,13 @@ export const generateTemplates = (
     // Twoja funkcja${jsFunctionBody}
 }`;
 
-    // ============================================
-    // CZĘŚĆ NIEWIDOCZNA (boilerplate dodawany przez backend)
-    // ============================================
+    // ------------------------------------------------------
+    // BOILERPLATES (hidden on FE)
+    // ------------------------------------------------------
 
-    // C++ boilerplate
-
-
+    // --------- C++ BOILERPLATE ---------
     let cppInput = '';
+
     if (arrayParam && sizeParam) {
         const regularParams = allParams.filter(p => p.type !== 'array' && p.name !== sizeParam.name);
         cppInput = `    int ${sizeParam.name};
@@ -106,16 +110,19 @@ export const generateTemplates = (
     for(int i = 0; i < ${sizeParam.name}; i++) {
         cin >> ${arrayParam.name}[i];
     }`;
+
         regularParams.forEach(p => {
             cppInput += `\n    ${getCppType(p.type)} ${p.name};
     cin >> ${p.name};`;
         });
+
     } else {
         const declarations = allParams
             .map(p => `    ${getCppType(p.type)} ${p.name};`)
             .join('\n');
 
         const cinParams = allParams.map(p => p.name).join(' >> ');
+
         cppInput = `${declarations}
     cin >> ${cinParams};`;
     }
@@ -127,7 +134,7 @@ export const generateTemplates = (
     let cppOutput = '';
     if (isVoid && arrayParam && sizeParam) {
         cppOutput = `    ${name}(${cppCallParams});
-    for(int i = 0; i < ${sizeParam?.name}; i++) {
+    for(int i = 0; i < ${sizeParam.name}; i++) {
         if(i > 0) cout << " ";
         cout << ${arrayParam.name}[i];
     }
@@ -146,14 +153,13 @@ export const generateTemplates = (
     }
 
     const cppBoilerplate = `
-//Ten kod jest niewidoczny dla ucznia. Służy on do wykonywania testów.
 int main() {
 ${cppInput}
     ${cppOutput}
     return 0;
 }`;
 
-    // Python boilerplate
+    // --------- PYTHON BOILERPLATE ---------
     let pyInput = '';
     let pyCallParams = '';
 
@@ -170,56 +176,61 @@ ${cppInput}
             .filter(p => p.name !== sizeParam.name)
             .map(p => p.name)
             .join(', ');
+
     } else {
         const paramNames = allParams.map(p => p.name).join(', ');
 
         if (allParams.length === 1) {
             pyInput = `    ${allParams[0].name} = ${getPythonConversion(allParams[0].type)}(input())`;
+
         } else if (allParams.every(p => p.type === 'int' || p.type === 'float')) {
-            const conversion = allParams[0].type === 'float' ? 'float' : 'int';
-            pyInput = `    ${paramNames} = map(${conversion}, input().split())`;
+            const conv = allParams[0].type === 'float' ? 'float' : 'int';
+            pyInput = `    ${paramNames} = map(${conv}, input().split())`;
+
         } else {
             pyInput = `    values = input().split()`;
             allParams.forEach((p, i) => {
                 pyInput += `\n    ${p.name} = ${getPythonConversion(p.type)}(values[${i}])`;
             });
         }
+
         pyCallParams = paramNames;
     }
 
     let pyOutput = '';
+
     if (isVoid && arrayParam) {
         pyOutput = `    ${name}(${pyCallParams})
     print(' '.join(map(str, ${arrayParam.name})))`;
+
     } else if (isReturningArray) {
         pyOutput = `    result = ${name}(${pyCallParams})
     print(' '.join(map(str, result)))`;
+
     } else {
         pyOutput = `    print(${name}(${pyCallParams}))`;
     }
 
     const pythonBoilerplate = `
-#Ten kod jest niewidoczny dla ucznia. Służy on do wykonywania testów.
 if __name__ == "__main__":
 ${pyInput}
 ${pyOutput}`;
 
-    // JavaScript boilerplate
+    // --------- JAVASCRIPT BOILERPLATE ---------
     let jsParseCode = '';
-    let jsCallCode = '';
 
     if (arrayParam && sizeParam) {
         const regularParams = allParams.filter(p => p.type !== 'array' && p.name !== sizeParam.name);
         const totalLines = 2 + regularParams.length;
 
         jsParseCode = `const lines = [];
-let lineCount = 0;
+let count = 0;
 
 rl.on('line', (line) => {
     lines.push(line);
-    lineCount++;
-    
-    if (lineCount === ${totalLines}) {
+    count++;
+
+    if (count === ${totalLines}) {
         const ${sizeParam.name} = parseInt(lines[0]);
         const ${arrayParam.name} = lines[1].split(' ').map(${getJsConversion(arrayParam.element_type)});`;
 
@@ -233,62 +244,51 @@ rl.on('line', (line) => {
             .join(', ');
 
         if (isVoid) {
-            jsCallCode = `${name}(${jsCallParams});
+            jsParseCode += `\n        ${name}(${jsCallParams});
         console.log(${arrayParam.name}.join(' '));`;
+
         } else if (isReturningArray) {
-            jsCallCode = `const result = ${name}(${jsCallParams});
+            jsParseCode += `\n        const result = ${name}(${jsCallParams});
         console.log(result.join(' '));`;
+
         } else {
-            jsCallCode = `console.log(${name}(${jsCallParams}));`;
+            jsParseCode += `\n        console.log(${name}(${jsCallParams}));`;
         }
 
-        jsParseCode += `\n        ${jsCallCode}
+        jsParseCode += `
         rl.close();
     }
 });`;
+
     } else {
-        const parts = allParams.map((p, i) =>
-            `const ${p.name} = ${getJsConversion(p.type)}(parts[${i}])`
-        ).join('; ');
-
-        const jsCallParams = allParams.map(p => p.name).join(', ');
-
-        if (isReturningArray) {
-            jsCallCode = `const result = ${name}(${jsCallParams});
-    console.log(result.join(' '));`;
-        } else {
-            jsCallCode = `console.log(${name}(${jsCallParams}));`;
-        }
-
         jsParseCode = `rl.on('line', (input) => {
     const parts = input.split(' ');
 
-    ${allParams
-            .map((p, i) => `const ${p.name} = ${getJsConversion(p.type)}(parts[${i}]);`)
-            .join('\n    ')}
+${allParams
+            .map((p, i) => `    const ${p.name} = ${getJsConversion(p.type)}(parts[${i}]);`)
+            .join('\n')}
 
     ${isReturningArray
             ? `const result = ${name}(${allParams.map(p => p.name).join(', ')});\n    console.log(result.join(' '));`
             : `console.log(${name}(${allParams.map(p => p.name).join(', ')}));`}
 
     rl.close();
-});`
+});`;
     }
 
     const javascriptBoilerplate = `
-//Ten kod jest niewidoczny dla ucznia. Służy on do wykonywania testów.
 const readline = require('readline');
 const rl = readline.createInterface({
     input: process.stdin,
     output: process.stdout
 });
-
 ${jsParseCode}`;
 
-    // ============================================
-    // ZAPISZ W ZADANIU
-    // ============================================
-    setTask({
+    // ------------------------------------------------------
+    // RETURN FINAL TASK ✔️
+    // ------------------------------------------------------
+
+    return {
         ...task,
         templates: {
             cpp: cppStudentCode,
@@ -300,21 +300,23 @@ ${jsParseCode}`;
             python: pythonBoilerplate,
             javascript: javascriptBoilerplate
         }
-    });
-
-    setShowCodeBluePrint(true);
+    };
 };
 
-// Helper functions pozostają bez zmian
+
+// ========================================================================
+// HELPERS
+// ========================================================================
+
 function getCppType(type: string): string {
-    const typeMap: Record<string, string> = {
+    const map: Record<string, string> = {
         int: "int",
         float: "float",
         double: "double",
         string: "string",
         bool: "bool",
     };
-    return typeMap[type] ?? "int";
+    return map[type] ?? "int";
 }
 
 function getDefaultValue(type: string): string {
@@ -329,18 +331,17 @@ function getDefaultValue(type: string): string {
 }
 
 function getPythonConversion(type: string): string {
-    const conversionMap: Record<string, string> = {
+    const map: Record<string, string> = {
         int: 'int',
         float: 'float',
         string: 'str',
         bool: 'bool'
     };
-    return conversionMap[type] || 'str';
+    return map[type] || 'str';
 }
 
 function getJsConversion(type: string): string {
-    if (type === 'int') return 'Number';
-    if (type === 'float' || type === 'double') return 'Number';
+    if (type === 'int' || type === 'float' || type === 'double') return 'Number';
     if (type === 'bool') return 'val => val === "true"';
     return 'val => val';
 }
