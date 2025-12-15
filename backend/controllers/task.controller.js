@@ -173,18 +173,87 @@ export const createNewTask = async (req, res) => {
 }
 
 export const getAllTasks = async (req, res) => {
+    const requestingUser = req.user
+    console.log(requestingUser)
+
     try {
-        const tasks = await prisma.task.findMany({
-            include: {
-                groups: true
+        const {
+            page = 0,
+            pageSize = 10,
+            search = "",
+            sortField = "createdAt",
+            sortOrder = "desc",
+        } = req.query;
+
+        const skip = Number(page) * Number(pageSize);
+        const take = Number(pageSize);
+
+        const where = search
+            ? {
+                OR: [
+                    {
+                        title: {
+                            contains: search,
+                        },
+                    },
+                    {
+                        description: {
+                            contains: search,
+                        },
+                    },
+                ],
             }
+            : {};
+
+        const orderBy = {
+            [sortField]: sortOrder === "asc" ? "asc" : "desc",
+        };
+
+        const [tasks, total] = await Promise.all([
+            prisma.task.findMany({
+                where,
+                skip,
+                take,
+                orderBy,
+                select: {
+                    id: true,
+                    title: true,
+                    description: true,
+                    isActive: true,
+                    createdAt: true,
+
+                    groups: {
+                        select: {
+                            id: true,
+                            name: true,
+                        },
+                    },
+
+                    createdBy: {
+                        select: {
+                            id: true,
+                            firstName: true,
+                            lastName: true,
+                            username: true,
+                        },
+                    },
+                },
+            }),
+            prisma.task.count({ where }),
+        ]);
+
+        return res.status(200).json({
+            data: tasks,
+            total,
         });
-        res.status(200).json(tasks)
     } catch (err) {
-        console.log(err)
-        return res.status(500).json({message: "Wystąpił błąd serwera."});
+        console.error("getAllTasks error:", err);
+        return res.status(500).json({
+            message: "Wystąpił błąd serwera.",
+        });
     }
-}
+};
+
 
 export const getStudentTask = async (req, res) => {
     try {
@@ -344,6 +413,70 @@ export const submitTask = async (req, res) => {
         res.status(500).json({error: err.message});
     }
 };
+
+export const toggleTaskStatus = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { isActive } = req.body;
+
+        if (typeof isActive !== "boolean") {
+            return res.status(400).json({
+                message: "Nieprawidłowa wartość isActive",
+            });
+        }
+
+        const task = await prisma.task.update({
+            where: { id },
+            data: { isActive },
+            select: {
+                id: true,
+                isActive: true,
+            },
+        });
+
+        return res.status(200).json(task);
+    } catch (err) {
+        console.error("toggleTaskStatus error:", err);
+        return res.status(500).json({
+            message: "Błąd podczas zmiany statusu zadania",
+        });
+    }
+};
+
+export const deleteTasks = async (req, res) => {
+
+    try {
+
+
+        const {taskIds: taskIds} = req.body;
+
+        if (!taskIds || !Array.isArray(taskIds) || taskIds.length === 0) {
+            return res.status(400).json({message: "Musisz podać listę taskIds."});
+        }
+
+        const existingTasks = await prisma.task.findMany({
+            where: {id: {in: taskIds}}
+        });
+
+        if (existingTasks.length === 0) {
+            return res.status(404).json({message: "Żadne z podanych zadań nie istnieje."});
+        }
+
+        await prisma.task.deleteMany({
+            where: {id: {in: taskIds}}
+        });
+
+        return res.status(200).json({
+            message: "Zadania zostały pomyślnie usunięte.",
+            deletedCount: existingTasks.length
+        });
+
+    } catch (err) {
+        console.error(err);
+        return res.status(500).json({message: "Wystąpił błąd podczas usuwania zadań."});
+    }
+};
+
 
 
 
