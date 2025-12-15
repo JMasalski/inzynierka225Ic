@@ -6,7 +6,7 @@ import {
     createNewTask,
     getAllTasks,
     getIndividualTask,
-    getStudentTask,
+    getStudentTask, runTask,
     submitTask
 } from "../controllers/task.controller.js";
 
@@ -17,7 +17,8 @@ taskRouter.get("/",authenticate,requireOnboarding,isTeacherOrRoot,getAllTasks)
 
 taskRouter.get("/student-task",authenticate,requireOnboarding,getStudentTask)
 taskRouter.get("/:id",authenticate,requireOnboarding,getIndividualTask)
-taskRouter.post("/submit-task",authenticate,requireOnboarding,submitTask)
+taskRouter.post("/run",authenticate,requireOnboarding,runTask)
+taskRouter.post("/save-submission",authenticate,requireOnboarding,submitTask)
 
 
 export default taskRouter;

@@ -41,6 +41,8 @@ type TaskState = {
     studentTasks: Task[]
     individualTask: Task | null
     submitTask: (data:SubmitData) => Promise<void>
+    runTask: (data:SubmitData) => Promise<void>
+
     submitResponse: SubmitResponse | null;
     clearSubmitResponse: () => void
 }
@@ -105,11 +107,27 @@ export const useTaskStore = create<TaskState>((set) => ({
             console.log("Zaczynam sprawdzac")
 
             set({taskCheckLoad: true});
-            const res = await axiosInstance.post("/api/v1/task/submit-task", data)
+            const res = await axiosInstance.post("/api/v1/task/save-submission", data)
             console.log(res)
             set({submitResponse: res.data})
         }catch(error:any){
+            set({ submitResponse: null });
             toast.error(error.response?.data?.message || "Wystąpił błąd podczas tworzenia zadania.")
+        }finally {
+            set({taskCheckLoad: false});
+        }
+    },
+    runTask:async(data)=>{
+        try {
+            set({taskCheckLoad: true});
+            const res = await axiosInstance.post("/api/v1/task/run", data)
+            console.log(res)
+            set({submitResponse: res.data})
+        }catch(error:any){
+            console.log(error);
+            set({ submitResponse: null });
+            toast.error(error.response?.data?.message || "Wystąpił błąd podczas zapisywania odpowiedzi.")
+
         }finally {
             set({taskCheckLoad: false});
         }
