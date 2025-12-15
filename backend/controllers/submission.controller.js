@@ -24,12 +24,16 @@ export const getSubmissionsForTask = async (req, res) => {
                         firstName: true,
                         lastName: true,
                         username: true,
+                        group: {
+                        select:{
+                            name: true,
+                            }
+                        }
                     },
                 },
             },
         });
 
-        // Dodaj allPassed, passedTests, totalTests do każdego submission
         const submissionsWithStats = submissions.map(sub => {
             const testResults = sub.testResults || [];
             const passedTests = testResults.filter((t) => t.passed).length;
