@@ -155,7 +155,7 @@ export const generateTemplates = (task: Task): Task => {
     const cppBoilerplate = `
 int main() {
 ${cppInput}
-    ${cppOutput}
+${cppOutput}
     return 0;
 }`;
 
