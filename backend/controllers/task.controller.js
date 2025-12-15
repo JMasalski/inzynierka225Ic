@@ -173,9 +173,6 @@ export const createNewTask = async (req, res) => {
 }
 
 export const getAllTasks = async (req, res) => {
-    const requestingUser = req.user
-    console.log(requestingUser)
-
     try {
         const {
             page = 0,
@@ -184,6 +181,7 @@ export const getAllTasks = async (req, res) => {
             sortField = "createdAt",
             sortOrder = "desc",
         } = req.query;
+        const ALLOWED_SORT_FIELDS = ["createdAt", "title", "isActive"];
 
         const skip = Number(page) * Number(pageSize);
         const take = Number(pageSize);
@@ -206,7 +204,7 @@ export const getAllTasks = async (req, res) => {
             : {};
 
         const orderBy = {
-            [sortField]: sortOrder === "asc" ? "asc" : "desc",
+               [ALLOWED_SORT_FIELDS.includes(sortField) ? sortField : "createdAt"]: sortOrder === "asc" ? "asc" : "desc",
         };
 
         const [tasks, total] = await Promise.all([
@@ -424,6 +422,12 @@ export const toggleTaskStatus = async (req, res) => {
                 message: "Nieprawidłowa wartość isActive",
             });
         }
+        const existingTask = await prisma.task.findUnique({ where: { id } });
+
+        if (!existingTask) {
+            return res.status(404).json({ message: "Zadanie nie istnieje" });
+        }
+
 
         const task = await prisma.task.update({
             where: { id },

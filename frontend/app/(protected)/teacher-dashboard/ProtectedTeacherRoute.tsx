@@ -3,6 +3,7 @@ import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import {useAuthStore} from "@/store/useAuthStore";
 import Loader from "@/components/Loader";
+import {ROLES} from "@/lib/roles";
 
 export default function ProtectedTeacherRoute({ children }: { children: React.ReactNode }) {
     const router = useRouter();
@@ -10,7 +11,7 @@ export default function ProtectedTeacherRoute({ children }: { children: React.Re
 
     useEffect(() => {
         if (!loading) {
-            if (!authUser || authUser.role !== "TEACHER") {
+            if (!authUser || authUser.role !== ROLES.TEACHER && authUser.role !== ROLES.ROOT) {
                 router.replace("/");
             }
         }

@@ -13,7 +13,6 @@ import ProtectedTeacherRoute from "@/app/(protected)/teacher-dashboard/Protected
 const Page = () => {
     const {id: taskId} = useParams();
     const {submissions, getSubmissionsForTask, loading} = useSubmissionStore();
-    console.log(taskId)
 
 
     const [open, setOpen] = useState(false);
@@ -22,7 +21,7 @@ const Page = () => {
 
     useEffect(() => {
         getSubmissionsForTask(taskId as string);
-    }, [taskId]);
+    }, [taskId,getSubmissionsForTask]);
 
 
     const columns: GridColDef[] = [
@@ -35,10 +34,17 @@ const Page = () => {
         },
         {
             field: "index",
-            headerName: "Indeks studneta",
+            headerName: "Indeks studenta",
             width: 220,
             valueGetter: (_, row) =>
                 `${row.user.username}`
+        },
+        {
+            field: "group",
+            headerName: "Grupa",
+            width: 220,
+            valueGetter: (_, row) =>
+                `${row.user.group.name}`
         },
         {
             field: "score",
@@ -72,6 +78,7 @@ const Page = () => {
         {
             field: "actions",
             type: "actions",
+            headerName: "Akcje",
             width: 100,
             getActions: (params) => [
                 <button
