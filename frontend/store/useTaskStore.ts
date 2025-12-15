@@ -3,7 +3,13 @@ import {Task} from "@/app/(protected)/teacher-dashboard/new-task/page";
 import {axiosInstance} from "@/lib/axiosInstance";
 import {toast} from "sonner";
 
-
+type GetAllTasksParams = {
+    page: number
+    pageSize: number
+    search?: string
+    sortField?: string
+    sortOrder?: "asc" | "desc"
+}
 type TestResult = {
     testCase: number
     passed: boolean
@@ -33,6 +39,12 @@ type SubmitData = {
     taskId:string,
 }
 type TaskState = {
+
+    getAllTasks: (params: GetAllTasksParams) => Promise<void>;
+    tasks: Task[];
+    total: number;
+    toggleTaskStatus: (taskId: string, isActive: boolean) => Promise<void>;
+
     addTask: (data: Task) => Promise<void>;
     getStudentTasks: () => Promise<void>;
     getIndividualTask: (id: string) => Promise<void>;
@@ -42,16 +54,18 @@ type TaskState = {
     individualTask: Task | null
     submitTask: (data:SubmitData) => Promise<void>
     runTask: (data:SubmitData) => Promise<void>
-
+    deleteTasks: (ids: string[]) => Promise<void>;
     submitResponse: SubmitResponse | null;
     clearSubmitResponse: () => void
 }
-export const useTaskStore = create<TaskState>((set) => ({
+export const useTaskStore = create<TaskState>((set,get) => ({
     loading: false,
     studentTasks: [],
     individualTask: null,
     submitResponse:null,
     taskCheckLoad: false,
+    tasks: [],
+    total: 0,
 
     clearSubmitResponse: () => set({ submitResponse: null }),
 
@@ -131,6 +145,79 @@ export const useTaskStore = create<TaskState>((set) => ({
         }finally {
             set({taskCheckLoad: false});
         }
-    }
+    },
+    getAllTasks: async ({ page, pageSize, search, sortField, sortOrder }) => {
+        console.log("Pobieram")
+
+        try {
+            set({ loading: true });
+
+            const res = await axiosInstance.get("/api/v1/task", {
+                params: {
+                    page,
+                    pageSize,
+                    search,
+                    sortField,
+                    sortOrder,
+                },
+            });
+            console.log(res)
+
+            set({
+                tasks: res.data.data,
+                total: res.data.total,
+            });
+        } catch (error: any) {
+            console.error(error);
+            toast.error(
+                error.response?.data?.message || "Nie udało się pobrać zadań."
+            );
+        } finally {
+            set({ loading: false });
+        }
+    },
+
+    toggleTaskStatus: async (taskId: string, isActive: boolean) => {
+        try {
+            await axiosInstance.patch(`/api/v1/task/${taskId}/status`, {
+                isActive,
+            });
+
+            set((state) => ({
+                tasks: state.tasks.map((task) =>
+                    task.id === taskId ? { ...task, isActive } : task
+                ),
+            }));
+        } catch (error) {
+
+            toast.error("Nie udało się zmienić statusu zadania");
+            throw error;
+        }
+    },
+    deleteTasks: async (ids) => {
+        try {
+            set({ loading: true });
+
+            await axiosInstance.delete("/api/v1/task", {
+                data: { taskIds: ids },
+            });
+
+            toast.success("Zadania zostały usunięte");
+
+            // odśwież listę
+            await get().getAllTasks({
+                page: 0,
+                pageSize: 10,
+            });
+        } catch (error: any) {
+            toast.error(
+                error.response?.data?.message ||
+                "Błąd podczas usuwania zadań"
+            );
+        } finally {
+            set({ loading: false });
+        }
+    },
+
 
 }))

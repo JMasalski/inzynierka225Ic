@@ -29,6 +29,7 @@ import {Button} from '@/components/ui/button';
 import {Input} from "@/components/ui/input";
 import {Checkbox} from '@/components/ui/checkbox';
 import {useUsersStore} from "@/store/useUsersStore";
+import ProtectedTeacherRoute from '../../ProtectedTeacherRoute';
 
 const Page = () => {
     const {authUser} = useAuthStore()
@@ -94,6 +95,7 @@ const Page = () => {
     if (loading) return <Loader/>
 
     return (
+        <ProtectedTeacherRoute>
         <div className="w-full flex justify-center">
             <Card className="shadow-custom mb-8 w-[900px]">
                 <CardHeader className="gap-y-12">
@@ -239,6 +241,7 @@ const Page = () => {
                 </CardContent>
             </Card>
         </div>
+        </ProtectedTeacherRoute>
     )
 }
 
