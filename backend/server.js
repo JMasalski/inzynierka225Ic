@@ -9,6 +9,7 @@ import onboardingRouter from "./routes/onboarding.route.js";
 import groupRouter from "./routes/group.route.js";
 import usersRouter from "./routes/users.route.js";
 import taskRouter from "./routes/task.route.js";
+import submissionRouter from "./routes/submission.router.js";
 const app = express();
 
 app.use(express.json());
@@ -26,6 +27,7 @@ app.use('/api/v1/onboarding',onboardingRouter);
 app.use('/api/v1/group',groupRouter);
 app.use('/api/v1/users',usersRouter);
 app.use('/api/v1/task',taskRouter);
+app.use('/api/v1/submission',submissionRouter);
 
 
 const port = process.env.PORT || 4000;

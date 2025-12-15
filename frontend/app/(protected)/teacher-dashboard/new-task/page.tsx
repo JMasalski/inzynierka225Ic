@@ -8,6 +8,7 @@ import FunctionSignatureCard from "@/app/(protected)/teacher-dashboard/new-task/
 import BasicInfoCard from "@/app/(protected)/teacher-dashboard/new-task/components/BasicInfoCard";
 import TestCasesCard from "@/app/(protected)/teacher-dashboard/new-task/components/TestCasesCard";
 import {useTaskStore} from "@/store/useTaskStore";
+import ProtectedTeacherRoute from "@/app/(protected)/teacher-dashboard/ProtectedTeacherRoute";
 
 interface FunctionParameter {
     name: string;
@@ -87,6 +88,7 @@ const Page = () => {
     };
 
     return (
+        <ProtectedTeacherRoute>
         <div className="flex flex-col gap-8">
             <BasicInfoCard
                 title={task.title}
@@ -137,6 +139,7 @@ const Page = () => {
               TODO: Poprawic error handling i sprawdzenie formularza
               */}
         </div>
+        </ProtectedTeacherRoute>
     );
 };
 

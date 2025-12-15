@@ -5,11 +5,12 @@ import {useRouter} from "next/navigation";
 import {BookOpen, TrendingUp, Users} from "lucide-react";
 import StatisticCard from "@/app/(protected)/teacher-dashboard/componentes/StatisticCard";
 import {Card, CardContent, CardDescription, CardHeader, CardTitle} from "@/components/ui/card";
-import React from "react";
+import React, {useEffect, useState} from "react";
 import ExercisesTab from "@/app/(protected)/teacher-dashboard/componentes/ExercisesTab";
 import {Tabs, TabsContent, TabsList, TabsTrigger} from "@/components/ui/tabs";
 import UsersTab from "@/app/(protected)/teacher-dashboard/componentes/UsersTab";
 import GroupesTab from "@/app/(protected)/teacher-dashboard/componentes/GroupesTab";
+import ProtectedTeacherRoute from "@/app/(protected)/teacher-dashboard/ProtectedTeacherRoute";
 
 const Page = () => {
     const {authUser} = useAuthStore()
@@ -19,8 +20,22 @@ const Page = () => {
         return null;
     }
 
+    const [activeTab, setActiveTab] = useState("usersTab");
+
+    useEffect(() => {
+        const storedTab = localStorage.getItem("activeTab");
+        if (storedTab) setActiveTab(storedTab);
+    }, []);
+
+    const handleTabChange = (value: string) => {
+        setActiveTab(value);
+        localStorage.setItem("activeTab", value);
+    };
+
+
 
     return (
+        <ProtectedTeacherRoute>
         <div>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
                 <StatisticCard icon={Users} title={"Liczba uczniów"} value={"21"}/>
@@ -36,7 +51,7 @@ const Page = () => {
                         postępy</CardDescription>
                 </CardHeader>
                 <CardContent>
-                    <Tabs defaultValue="usersTab" className="gap-12">
+                    <Tabs value={activeTab} onValueChange={handleTabChange} className="gap-12">
                         <TabsList className="grid w-full grid-cols-3">
                             <TabsTrigger value="usersTab">Użytkownicy</TabsTrigger>
                             <TabsTrigger value="groupesTab">Grupy</TabsTrigger>
@@ -55,6 +70,7 @@ const Page = () => {
                 </CardContent>
             </Card>
         </div>
+        </ProtectedTeacherRoute>
     );
 }
 export default Page
