@@ -27,7 +27,7 @@ const runJudge0Tests = async ({
     let maxMemory = 0;
 
     const JUDGE0_URL =
-        process.env.SUBMISSION_URL || 'http://192.168.0.193:2358/submissions';
+        process.env.SUBMISSION_URL;
 
     for (let i = 0; i < testCases.length; i++) {
         const testCase = testCases[i];

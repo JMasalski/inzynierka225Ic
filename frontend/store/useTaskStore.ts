@@ -126,7 +126,7 @@ export const useTaskStore = create<TaskState>((set) => ({
         }catch(error:any){
             console.log(error);
             set({ submitResponse: null });
-            toast.error(error.response?.data?.message || "Wystąpił błąd podczas zapisywania odpowiedzi.")
+            toast.error(error.response?.data?.message || "Wystąpił błąd podczas uruchamiania testów.")
 
         }finally {
             set({taskCheckLoad: false});
