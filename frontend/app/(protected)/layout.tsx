@@ -64,7 +64,7 @@ export default function ProtectedLayout({
     return (
         <div className="flex flex-col min-h-screen">
             <Navbar />
-            <main className="flex-1 bg-gradient-to-br from-purple-50 via-white to-pink-50">
+            <main className="flex-1 flex bg-gradient-to-br from-purple-50 via-white to-pink-50">
                 <div className="container mx-auto px-4 py-8">
                     {children}
                 </div>
