@@ -272,6 +272,8 @@ export const runTask = async (req, res) => {
         const task = await prisma.task.findUnique({where: {id: taskId}});
         if (!task) return res.status(404).json({error: "Nie znaleziono zadania"});
 
+        if (!task.isActive) return res.status(403).json({error: "To zadanie nie jest już aktywne."});
+
         const result = await runJudge0Tests({
             code,
             task,
@@ -294,11 +296,11 @@ export const submitTask = async (req, res) => {
     const userId = req.user.id;
 
     try {
-        const { code, taskId, language_id } = req.body;
+        const {code, taskId, language_id} = req.body;
 
-        const task = await prisma.task.findUnique({ where: { id: taskId } });
+        const task = await prisma.task.findUnique({where: {id: taskId}});
         if (!task || !task.isActive)
-            return res.status(403).json({ error: "Task inactive" });
+            return res.status(403).json({error: "Task inactive"});
 
         const result = await runJudge0Tests({
             code,
@@ -308,7 +310,7 @@ export const submitTask = async (req, res) => {
 
         await prisma.submission.upsert({
             where: {
-                userId_taskId: { userId, taskId }
+                userId_taskId: {userId, taskId}
             },
             update: {
                 code,
@@ -339,7 +341,7 @@ export const submitTask = async (req, res) => {
 
     } catch (err) {
         console.error(err);
-        res.status(500).json({ error: err.message });
+        res.status(500).json({error: err.message});
     }
 };
 
