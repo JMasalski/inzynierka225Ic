@@ -9,6 +9,7 @@ import {
     getStudentTask, runTask,
     submitTask
 } from "../controllers/task.controller.js";
+import {canAccessTask} from "../middleware/canAccessTask.js";
 
 const taskRouter = Router()
 
@@ -17,8 +18,8 @@ taskRouter.get("/",authenticate,requireOnboarding,isTeacherOrRoot,getAllTasks)
 
 taskRouter.get("/student-task",authenticate,requireOnboarding,getStudentTask)
 taskRouter.get("/:id",authenticate,requireOnboarding,getIndividualTask)
-taskRouter.post("/run",authenticate,requireOnboarding,runTask)
-taskRouter.post("/save-submission",authenticate,requireOnboarding,submitTask)
+taskRouter.post("/run",authenticate,requireOnboarding,canAccessTask,runTask)
+taskRouter.post("/save-submission",authenticate,requireOnboarding,canAccessTask,submitTask)
 
 
 export default taskRouter;

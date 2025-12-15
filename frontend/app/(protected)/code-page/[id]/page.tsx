@@ -43,22 +43,27 @@ const Page = () => {
 
     const handleRunTask = async () => {
         setIsSubmitting(true)
+        try{
         await runTask({
             taskId: taskId,
             language_id: selectedLanguage.id,
             code: code
-        })
-        setIsSubmitting(false)
+        })}finally {
+            setIsSubmitting(false)
+        }
     }
 
     const handleSubmit = async () => {
         setIsSubmitting(true)
+        try{
         await submitTask({
             taskId: taskId,
             language_id: selectedLanguage.id,
             code: code
-        })
-        setIsSubmitting(false)
+        })}finally {
+            setIsSubmitting(false)
+
+        }
     }
 
     if (loading && !individualTask) return <Loader/>
