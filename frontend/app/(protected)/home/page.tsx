@@ -13,9 +13,10 @@ export default function Page() {
 
     useEffect(() => {
         getStudentTasks()
-    }, [getStudentTasks])
+    }, [])
 
     if (loading) return <Loader/>
+    console.log(studentTasks)
 
     if (studentTasks.length===0) return (
         <div className="flex flex-col items-center justify-center text-center py-20 px-6">

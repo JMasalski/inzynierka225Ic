@@ -13,6 +13,11 @@ enum Role {
   STUDENT
 }
 
+enum SubmissionStatus {
+  PASSED
+  FAILED
+}
+
 model User {
   id                 String  @id @default(uuid())
   username           String  @unique
@@ -36,7 +41,8 @@ model User {
   // Relacja z grupą
   group Group? @relation("GroupStudents", fields: [groupId], references: [id], onDelete: SetNull)
 
-  tasks Task[] @relation("TeacherTask")
+  tasks      Task[]       @relation("TeacherTask")
+  Submission Submission[]
 
   @@index([role])
 }
@@ -58,7 +64,6 @@ model Task {
   title       String
   description String
 
-  // Wszystkie części zadania
   function_signature Json
   test_cases         Json
   templates          Json
@@ -66,11 +71,36 @@ model Task {
 
   isActive Boolean
 
-  groups      Group[] @relation("TaskGroups")
-  // Relacja z nauczycielem który stworzył to zadanie
+  groups Group[] @relation("TaskGroups")
+
   createdById String?
   createdBy   User?   @relation("TeacherTask", fields: [createdById], references: [id])
 
+  createdAt  DateTime     @default(now())
+  updatedAt  DateTime     @updatedAt
+  Submission Submission[]
+}
+
+model Submission {
+  id String @id @default(uuid())
+
+  userId String
+  taskId String
+
+  code       String
+  languageId Int
+
+  status      SubmissionStatus
+  score       Int?
+  testResults Json?
+  totalTime   Float?
+  maxMemory   Int?
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  task Task @relation(fields: [taskId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, taskId])
 }
