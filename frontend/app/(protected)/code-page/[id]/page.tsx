@@ -15,7 +15,7 @@ const Page = () => {
     const params = useParams()
     const taskId = params.id as string;
 
-    const {getIndividualTask, individualTask, loading, submitTask, submitResponse,clearSubmitResponse} = useTaskStore()
+    const {getIndividualTask, individualTask, loading, submitTask, submitResponse,clearSubmitResponse,runTask} = useTaskStore()
     const [selectedLanguage, setSelectedLanguage] = useState(LANGUAGES[0])
     const [code, setCode] = useState("")
     const [isSubmitting, setIsSubmitting] = useState(false)
@@ -40,6 +40,16 @@ const Page = () => {
     useEffect(() => {
         clearSubmitResponse()
     }, [taskId])
+
+    const handleRunTask = async () => {
+        setIsSubmitting(true)
+        await runTask({
+            taskId: taskId,
+            language_id: selectedLanguage.id,
+            code: code
+        })
+        setIsSubmitting(false)
+    }
 
     const handleSubmit = async () => {
         setIsSubmitting(true)
@@ -250,14 +260,14 @@ const Page = () => {
                                     <Button
                                         className="flex-1 bg-blue-500 hover:bg-blue-600"
                                         disabled={isSubmitting}
-                                        onClick={handleSubmit}
+                                        onClick={handleRunTask}
                                     >
                                         Uruchom testy <SquareArrowRight/>
                                     </Button>
                                     <Button
                                         className="flex-1 bg-green-500 hover:bg-green-600"
                                         disabled={isSubmitting}
-                                        onClick={() => console.log('Zapisano rozwiązanie')}
+                                        onClick={handleSubmit}
                                     >
                                         Zapisz odpowiedź
                                     </Button>
