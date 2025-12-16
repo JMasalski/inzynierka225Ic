@@ -41,6 +41,7 @@ type UsersState = {
         sortOrder?: "asc" | "desc" | null
     } | null;
     getUsersWithoutGroup:()=>Promise<void>;
+    resetPassword:(id:string)=>void;
 }
 
 export const useUsersStore = create<UsersState>((set, get) => ({
@@ -126,6 +127,14 @@ export const useUsersStore = create<UsersState>((set, get) => ({
             set({loading: false});
         }
 
+    },
+    resetPassword: async(id)=>{
+        try{
+            const res = await axiosInstance.post(`/api/v1/users/${id}`)
+            toast.success(res.data.message)
+        }catch (e) {
+            toast.error("Nie udało się zmienić hasła");
+        }
     }
 
 }))

@@ -8,7 +8,7 @@ import {
     GridRowEditStopReasons, GridRowSelectionModel
 } from "@mui/x-data-grid";
 import {useGroupStore, GroupTableItem} from "@/store/useGroupStore";
-import {EditIcon, Search, TrashIcon} from "lucide-react";
+import {EditIcon, Search} from "lucide-react";
 import {Input} from "@/components/ui/input";
 import useDebounce from "@/lib/useDebounce";
 
@@ -17,7 +17,7 @@ import {Button} from "@/components/ui/button";
 import {useRouter} from "next/navigation";
 
 const DataGridGroupes = () => {
-    const {groups, total, loading, fetchGroupesToTable, updateGroupName} = useGroupStore();
+    const {groups, total, loading, fetchGroupsToTable, updateGroupName,deleteGroup} = useGroupStore();
     const router = useRouter();
     const [page, setPage] = useState(0);
     const [pageSize, setPageSize] = useState(10);
@@ -33,14 +33,14 @@ const DataGridGroupes = () => {
     const debounceSearch = useDebounce(search, 1000);
 
     useEffect(() => {
-        fetchGroupesToTable({
+        fetchGroupsToTable({
             page,
             pageSize,
             search: debounceSearch,
             sortField: sortModel[0]?.field,
             sortOrder: sortModel[0]?.sort || undefined,
         });
-    }, [page, pageSize, sortModel, debounceSearch, fetchGroupesToTable]);
+    }, [page, pageSize, sortModel, debounceSearch, fetchGroupsToTable]);
 
     const handleRowEditStop: GridEventListener<'rowEditStop'> = (params, event) => {
         if (params.reason === GridRowEditStopReasons.rowFocusOut) {
@@ -94,7 +94,7 @@ const DataGridGroupes = () => {
                 return [
                     <ConfirmDeleteDialog title={"Usuń grupę"}
                                          description={"Czy na pewno chcesz usunąć tą grupę? Ta akcja jest nieodwracalna."}
-                                         onConfirmDelete={() => console.log([params.id])}
+                                         onConfirmDelete={() => deleteGroup([params.id as string])}
                                          idsToDelete={[params.id]}/>,
                     <Button variant={"ghost"} onClick={()=>router.push(`/teacher-dashboard/group/${params.id}`)}>
                         <EditIcon/>
@@ -124,7 +124,11 @@ const DataGridGroupes = () => {
                         <ConfirmDeleteDialog title={"Usuń grupy"}
                                              triggerLabel={`Usuń ${selectionModel.ids.size} grup`}
                                              description={`Czy na pewno chcesz usunąć ${selectionModel.ids.size} grup? Ta akcja jest nieodwracalna.`}
-                                             onConfirmDelete={()=>console.log(Array.from(selectionModel.ids.values()))}
+                                             onConfirmDelete={() =>
+                                                 deleteGroup(
+                                                     Array.from(selectionModel.ids).map(String)
+                                                 )
+                                             }
                                              idsToDelete={Array.from(selectionModel.ids.values())}
                         />)}
 
@@ -158,6 +162,11 @@ const DataGridGroupes = () => {
                     onRowEditStop={handleRowEditStop}
                     processRowUpdate={processRowUpdate}
                     onProcessRowUpdateError={handleProcessRowUpdateError}
+                    sx={{
+                        "& .MuiDataGrid-columnHeaderCheckbox .MuiCheckbox-root": {
+                            display: "none",
+                        },
+                    }}
                 />
             </div>
         </div>

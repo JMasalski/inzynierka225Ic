@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from 'react'
-import {ChevronDown, Search} from "lucide-react";
+import {ChevronDown, RotateCcw, Search} from "lucide-react";
 import {Input} from "@/components/ui/input";
 import {DataGrid, GridColDef, GridRowSelectionModel, GridSortModel} from "@mui/x-data-grid";
 import {User, useUsersStore} from "@/store/useUsersStore";
@@ -7,12 +7,14 @@ import useDebounce from "@/lib/useDebounce";
 import {useGroupStore} from "@/store/useGroupStore";
 import {ROLES} from "@/lib/roles";
 import ConfirmDeleteDialog from "@/app/(protected)/teacher-dashboard/componentes/ConfirmDeleteDialog";
+import {useAuthStore} from "@/store/useAuthStore";
+import {Button} from '@/components/ui/button';
 
 
 const DataGridUsers = () => {
-
-    const {loading, getAllUsers, users, total, deleteUsers} = useUsersStore()
-    const {fetchGroupesToTable, groups, addStudentsToGroup,removeStudentFromGroup} = useGroupStore()
+    const {authUser} = useAuthStore()
+    const {loading, getAllUsers, users, total, deleteUsers, resetPassword} = useUsersStore()
+    const {fetchGroupsToTable, groups, addStudentsToGroup, removeStudentFromGroup} = useGroupStore()
 
     const [page, setPage] = useState(0);
     const [pageSize, setPageSize] = useState(10);
@@ -26,7 +28,7 @@ const DataGridUsers = () => {
     const debounceSearch = useDebounce(search, 1000);
 
     useEffect(() => {
-        fetchGroupesToTable({
+        fetchGroupsToTable({
             page: 0,
             pageSize: 100,
         });
@@ -48,7 +50,7 @@ const DataGridUsers = () => {
             const newGroupId = newRow.group?.id;
             if (newGroupId) {
                 await addStudentsToGroup(newGroupId, [newRow.id]);
-            }else{
+            } else {
                 await removeStudentFromGroup([newRow.id]);
             }
 
@@ -96,7 +98,7 @@ const DataGridUsers = () => {
             editable: true,
             type: "singleSelect",
             valueOptions: [
-                {value:"" ,label:"Brak grupy"},
+                {value: "", label: "Brak grupy"},
                 ...groups.map(group => ({
                     value: group.id,
                     label: group.name
@@ -135,7 +137,30 @@ const DataGridUsers = () => {
                 ];
             }
 
+        },
+        {
+            field: 'rootActions',
+            headerName: 'Resetuj hasło',
+            type: "actions",
+            width: 120,
+            getActions: (params) => {
+                if (authUser?.role !== ROLES.ROOT) {
+                    return [];
+                }
+
+                return [
+                    <Button
+                        onClick={() => resetPassword(params.id as string)}
+                        variant={"ghost"}
+                    >
+                        <RotateCcw/>
+                    </Button>
+
+                ];
+            },
         }
+
+
     ]
 
 

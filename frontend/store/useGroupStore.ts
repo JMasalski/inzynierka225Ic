@@ -36,7 +36,7 @@ type GroupState = {
     singleGroup: Group|null;
     total: number;
 
-    fetchGroupesToTable: (params: {
+    fetchGroupsToTable: (params: {
         page: number;
         pageSize: number;
         sortField?: string;
@@ -49,6 +49,7 @@ type GroupState = {
     addStudentsToGroup: (groupId: string, studentsIds: string[]) => Promise<void>;
     removeStudentFromGroup: (id: string[]) => Promise<void>;
     fetchSingleGroup: (id: string) => Promise<void>;
+    deleteGroup: (ids:string[]) => Promise<void>;
 };
 
 export const useGroupStore = create<GroupState>((set,get) => ({
@@ -57,9 +58,8 @@ export const useGroupStore = create<GroupState>((set,get) => ({
     singleGroup:null,
     total: 0,
 
-    fetchGroupesToTable: async (params) => {
+    fetchGroupsToTable: async (params) => {
         try {
-            console.log("START FETCH GROUPS", params);
 
             set({ loading: true });
 
@@ -69,7 +69,6 @@ export const useGroupStore = create<GroupState>((set,get) => ({
                 groups: res.data.data,
                 total: res.data.total
             });
-            console.log("FETCH RESULT:", res.data);
 
         } catch (e) {
             console.error(e);
@@ -99,6 +98,8 @@ export const useGroupStore = create<GroupState>((set,get) => ({
             toast.success("Nazwa grupy zmieniona pomyślnie")
         } catch (e) {
             console.error(e);
+            toast.error("Wystąpił bład podczas zmiany nazwy grupy")
+
         }
     },
 
@@ -137,6 +138,27 @@ export const useGroupStore = create<GroupState>((set,get) => ({
             toast.error("Podczas usuwania ucznia wystąpił błąd")
         }
     },
+    deleteGroup : async(groupIds) =>{
+        try {
+            await axiosInstance.delete("/api/v1/group/delete-groupes",
+                {data:
+                        {groupIds}}
+            );
+            toast.success("Grupy zostały usunięte");
+
+            await get().fetchGroupsToTable({
+                page: 0,
+                pageSize: 10,
+            });
+        }catch (e:any) {
+            toast.error(
+                e.response?.data?.message ||
+                "Błąd podczas usuwania zadań"
+            );
+            console.error(e);
+
+        }
+    }
 
 
 }));

@@ -2,8 +2,6 @@
 import {ROLES} from "@/lib/roles";
 import {useAuthStore} from "@/store/useAuthStore";
 import {useRouter} from "next/navigation";
-import {BookOpen, TrendingUp, Users} from "lucide-react";
-import StatisticCard from "@/app/(protected)/teacher-dashboard/componentes/StatisticCard";
 import {Card, CardContent, CardDescription, CardHeader, CardTitle} from "@/components/ui/card";
 import React, {useEffect, useState} from "react";
 import ExercisesTab from "@/app/(protected)/teacher-dashboard/componentes/ExercisesTab";
@@ -37,13 +35,6 @@ const Page = () => {
     return (
         <ProtectedTeacherRoute>
         <div>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
-                <StatisticCard icon={Users} title={"Liczba uczniów"} value={"21"}/>
-                <StatisticCard icon={BookOpen} title={"Zadania"} subtitle={"Dostępnych zadań"} value={"4"}/>
-                <StatisticCard icon={TrendingUp} title={"Średnia ukończenia"} subtitle={"Wszystkich zadań"}
-                               value={"5%"}/>
-            </div>
-
             <Card className="shadow-custom">
                 <CardHeader>
                     <CardTitle className="font-bold">Zarządzanie platformą</CardTitle>

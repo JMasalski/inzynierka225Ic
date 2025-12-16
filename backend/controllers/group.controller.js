@@ -1,6 +1,5 @@
 import prisma from "../lib/prismaClient.js";
 
-//TODO PODODAWAC ERROR HANDLING
 
 export const getAllGroupes = async (req, res) => {
 
@@ -54,7 +53,7 @@ export const getAllGroupes = async (req, res) => {
 
     } catch (err) {
         console.error(err);
-        return res.status(500).json({message: "Błąd serwera"});
+        return res.status(500).json({message: "Wystąpił błąd podczas pobierania grup"});
     }
 };
 export const getGroup = async (req, res) => {
@@ -83,7 +82,7 @@ export const getGroup = async (req, res) => {
         return res.status(200).json(group);
     } catch (err) {
         console.log(err);
-        return res.status(500).json({message: "Błąd serwera"})
+        return res.status(500).json({message: "Wystąpił błąd podczas pobierania grupy"})
     }
 }
 export const createGroup = async (req, res) => {
@@ -147,7 +146,7 @@ export const addStudentToGroup = async (req, res) => {
 
     } catch (err) {
         console.error(err);
-        return res.status(500).json({message: "Błąd serwera"});
+        return res.status(500).json({message: "Błąd podczas dodawania ucznia do grupy"});
     }
 }
 
@@ -170,7 +169,6 @@ export const deleteGroup = async (req, res) => {
             return res.status(404).json({message: "Żadna z podanych grup nie istnieje."});
         }
 
-        // usuwanie wielu naraz
         await prisma.group.deleteMany({
             where: {id: {in: groupIds}}
         });
@@ -209,7 +207,7 @@ export const removeStudentFromGroup = async (req, res) => {
         return res.status(200).json({ message: "Uczniowie zostali usunięci z grupy." });
     } catch (err) {
         console.error(err);
-        return res.status(500).json({ message: "Błąd serwera." });
+        return res.status(500).json({ message: "Wystapił błąd podczas usuwania ucznia z grupy." });
     }
 };
 export const updateGroup = async (req, res) => {
@@ -234,6 +232,6 @@ export const updateGroup = async (req, res) => {
         return res.status(200).json({message: "Nazwa grupy zmieniona pomyślnie."});
     } catch (err) {
         console.error(err);
-        return res.status(500).json("Błąd serwera");
+        return res.status(500).json("Wystąpił błąd podczas aktualizowania grupy");
     }
 }

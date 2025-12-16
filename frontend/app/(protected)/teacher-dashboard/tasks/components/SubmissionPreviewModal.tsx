@@ -20,10 +20,10 @@ export default function SubmissionPreviewModal({open, onClose, submission}: any)
             <DialogContent
                 className="p-0 gap-0 border-0"
                 style={{
-                    maxWidth: '98vw',
-                    maxHeight: '98vh',
-                    width: '98vw',
-                    height: '98vh'
+                    maxWidth: '90vw',
+                    maxHeight: '90vh',
+                    width: '90vw',
+                    height: '90vh'
                 }}
             >
                 <div className="flex flex-col h-full w-full bg-white rounded-lg overflow-hidden">
