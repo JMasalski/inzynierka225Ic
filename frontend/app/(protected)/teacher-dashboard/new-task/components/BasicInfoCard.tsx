@@ -38,11 +38,11 @@ const BasicInfoCard = ({
                        }: BasicInfoCardProps) => {
 
 
-    const {groups, fetchGroupesToTable} = useGroupStore()
+    const {groups, fetchGroupsToTable} = useGroupStore()
     const [selectedGroupIds, setSelectedGroupIds] = useState<string[]>(groupIds);
 
     useEffect(() => {
-        fetchGroupesToTable({page: 0, pageSize: 1000})
+        fetchGroupsToTable({page: 0, pageSize: 1000})
     }, []);
 
     useEffect(() => {
