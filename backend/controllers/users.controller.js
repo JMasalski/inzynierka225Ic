@@ -1,5 +1,6 @@
-import { ROLES } from "../lib/roles.js";
+import {ROLES} from "../lib/roles.js";
 import prisma from "../lib/prismaClient.js";
+import * as bcrypt from "bcryptjs";
 
 export const getAllUsers = async (req, res) => {
 
@@ -20,12 +21,12 @@ export const getAllUsers = async (req, res) => {
         const search = req.query.search || "";
 
         const where = {
-            role: { not: ROLES.ROOT },
+            role: {not: ROLES.ROOT},
             OR: search && search.trim()
                 ? [
-                    { firstName: { contains: search} },
-                    { lastName: { contains: search }},
-                    { username: { contains: search }}
+                    {firstName: {contains: search}},
+                    {lastName: {contains: search}},
+                    {username: {contains: search}}
                 ]
                 : undefined
         };
@@ -43,13 +44,13 @@ export const getAllUsers = async (req, res) => {
                 lastName: true,
                 role: true,
                 group: {
-                    select: { name: true,id: true },
+                    select: {name: true, id: true},
                 },
                 username: true
             }
         });
 
-        const total = await prisma.user.count({ where });
+        const total = await prisma.user.count({where});
 
         return res.status(200).json({
             data: users,
@@ -58,22 +59,20 @@ export const getAllUsers = async (req, res) => {
 
     } catch (err) {
         console.log(err);
-        return res.status(500).json({ message: "Błąd serwera" });
+        return res.status(500).json({message: "Błąd serwera"});
     }
 };
 
-export const getUsersWithoutGroup = async (req,res)=>{
+export const getUsersWithoutGroup = async (req, res) => {
 
     try {
 
 
-
-
         const users = await prisma.user.findMany({
-            where:{
+            where: {
                 group: null,
                 role: {
-                    notIn:[ ROLES.ROOT,ROLES.TEACHER ],
+                    notIn: [ROLES.ROOT, ROLES.TEACHER],
 
                 }
             },
@@ -93,7 +92,7 @@ export const getUsersWithoutGroup = async (req,res)=>{
 
     } catch (err) {
         console.log(err);
-        return res.status(500).json({ message: "Błąd serwera" });
+        return res.status(500).json({message: "Błąd serwera"});
     }
 }
 
@@ -102,22 +101,22 @@ export const deleteUsers = async (req, res) => {
     try {
 
 
-        const { usersIds } = req.body;
+        const {usersIds} = req.body;
 
         if (!usersIds || !Array.isArray(usersIds) || usersIds.length === 0) {
-            return res.status(400).json({ message: "Musisz podać listę użytkowników." });
+            return res.status(400).json({message: "Musisz podać listę użytkowników."});
         }
 
         const existingUsers = await prisma.user.findMany({
-            where: { id: { in: usersIds } }
+            where: {id: {in: usersIds}}
         });
 
         if (existingUsers.length === 0) {
-            return res.status(404).json({ message: "Żaden z podanych użytkowników nie istnieje." });
+            return res.status(404).json({message: "Żaden z podanych użytkowników nie istnieje."});
         }
 
         const deleted = await prisma.user.deleteMany({
-            where: { id: { in: usersIds } }
+            where: {id: {in: usersIds}}
         });
 
         return res.status(200).json({
@@ -127,7 +126,53 @@ export const deleteUsers = async (req, res) => {
 
     } catch (err) {
         console.error(err);
-        return res.status(500).json({ message: "Wystąpił błąd podczas usuwania użytkowników." });
+        return res.status(500).json({message: "Wystąpił błąd podczas usuwania użytkowników."});
     }
 };
+
+
+export const resetPassword = async (req, res) => {
+    const requestingUser = req.user;
+    const userId = req.params.id
+    try {
+        if (requestingUser.role !== Role.ROOT) {
+            return res.status(403).json({message: "Nie masz dostępu do tej akcji."});
+        }
+
+        const existingUser =await prisma.user.findUnique({
+            where: {
+                id: userId
+            }
+        })
+
+        if (!existingUser) {
+            return res.status(400).json({message:"Użytkownik nie istnieje"})
+        }
+
+        if (!process.env.FIRST_PASSWORD) {
+            return res.status(500).json({message: "Brak FIRST_PASSWORD w pliku konfiguracyjnym"});
+        }
+        const hashedPassword = await bcrypt.hash(process.env.FIRST_PASSWORD, 10);
+
+
+        await prisma.user.update({
+            where: {
+                id: userId
+            },
+            data: {
+                password: hashedPassword,
+                hasOnboarded:false
+            }
+        })
+
+        return res.status(200).json({
+            message:"Hasło zresetowane pomyślnie"
+        })
+
+
+    } catch (err) {
+        console.error("Błąd resetowania hasła:", err);
+        return res.status(500).json({message: "Błąd przy resetowania hasła"})
+    }
+}
 

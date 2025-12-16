@@ -44,9 +44,16 @@ export const createUser = async (req, res) => {
             skipDuplicates: true,
         });
 
+        const skipped = newUsersData.length - createdUsers.count;
+
+
         return res.status(201).json({
-            message: "Użytkownicy zostali dodani pomyślnie",
-            count: createdUsers.count,
+            message:
+                skipped > 0
+                    ? `Część użytkowników nie została dodana (${skipped} duplikaty)`
+                    : "Użytkownicy zostali dodani pomyślnie",
+            createdCount: createdUsers.count,
+            skippedCount: skipped,
         });
 
     } catch (err) {

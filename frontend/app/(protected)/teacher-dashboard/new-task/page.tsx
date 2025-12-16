@@ -9,6 +9,7 @@ import BasicInfoCard from "@/app/(protected)/teacher-dashboard/new-task/componen
 import TestCasesCard from "@/app/(protected)/teacher-dashboard/new-task/components/TestCasesCard";
 import {useTaskStore} from "@/store/useTaskStore";
 import ProtectedTeacherRoute from "@/app/(protected)/teacher-dashboard/ProtectedTeacherRoute";
+import {Loader2} from "lucide-react";
 
 interface FunctionParameter {
     name: string;
@@ -46,6 +47,16 @@ export type Task = {
         javascript: string;
     }
     groupIds: string[];
+    createdBy?: {
+        firstName: string;
+        lastName: string;
+    }
+    hasSubmission?: boolean;
+    submission?: {
+        status: 'PASSED' | 'FAILED';
+        score: number | null;
+        createdAt: Date;
+    } | null;
 };
 
 const Page = () => {
@@ -89,56 +100,62 @@ const Page = () => {
 
     return (
         <ProtectedTeacherRoute>
-        <div className="flex flex-col gap-8">
-            <BasicInfoCard
-                title={task.title}
-                description={task.description}
-                isActive={task.isActive}
-                groupIds={task.groupIds}
+            <div className="flex flex-col gap-8">
+                <BasicInfoCard
+                    title={task.title}
+                    description={task.description}
+                    isActive={task.isActive}
+                    groupIds={task.groupIds}
 
-                onTitleChange={(title) => setTask({...task, title})}
-                onDescriptionChange={(description) => setTask({...task, description})}
-                onIsActiveChange={(isActive) => setTask({...task, isActive})}
-                onGroupIdsChange={(groupIds) => setTask({...task, groupIds})}
-            />
-
-            <FunctionSignatureCard
-                functionSignature={task.function_signature}
-                onSignatureChange={(function_signature) => setTask({...task, function_signature})}
-                onGenerateTemplates={handleGenerateTemplates}
-            />
-
-            {showCodeBluePrint && (
-                <CodePreviewCard
-                    templates={task.templates}
-                    boilerplates={task.boilerplates}
-                    onHide={() => setShowCodeBluePrint(false)}
+                    onTitleChange={(title) => setTask({...task, title})}
+                    onDescriptionChange={(description) => setTask({...task, description})}
+                    onIsActiveChange={(isActive) => setTask({...task, isActive})}
+                    onGroupIdsChange={(groupIds) => setTask({...task, groupIds})}
                 />
-            )}
 
-            <TestCasesCard
-                testCases={task.test_cases}
-                functionSignature={task.function_signature}
-                onTestCasesChange={(test_cases) => setTask({...task, test_cases})}
-            />
+                <FunctionSignatureCard
+                    functionSignature={task.function_signature}
+                    onSignatureChange={(function_signature) => setTask({...task, function_signature})}
+                    onGenerateTemplates={handleGenerateTemplates}
+                />
 
-            <Button onClick={async () => {
-                try {
-                    const nextTask = generateTemplates(task);
-                    setTask(nextTask);
-                    setShowCodeBluePrint(true);
+                {showCodeBluePrint && (
+                    <CodePreviewCard
+                        templates={task.templates}
+                        boilerplates={task.boilerplates}
+                        onHide={() => setShowCodeBluePrint(false)}
+                    />
+                )}
 
-                    await addTask(nextTask);
-                } catch (err:any) {
-                    alert(err.message);
-                }
-            }}
-            >
-                Dodaj zadanie</Button>
-            {/*TODO: Dodac test i zapis i anuluj
-              TODO: Poprawic error handling i sprawdzenie formularza
-              */}
-        </div>
+                <TestCasesCard
+                    testCases={task.test_cases}
+                    functionSignature={task.function_signature}
+                    onTestCasesChange={(test_cases) => setTask({...task, test_cases})}
+                />
+
+                <Button
+                    disabled={loading}
+                    onClick={async () => {
+                        try {
+                            const nextTask = generateTemplates(task);
+                            setTask(nextTask);
+                            setShowCodeBluePrint(true);
+
+                            await addTask(nextTask);
+                        } catch (err: any) {
+                            alert(err.message);
+                        }
+                    }}
+                >
+                    {loading ? (
+                        <span className="flex items-center gap-2">
+                            <Loader2 className="h-4 w-4 animate-spin"/>
+                            Dodawanie...
+                        </span>
+                    ) : (
+                        "Dodaj zadanie"
+                    )}</Button>
+            </div>
         </ProtectedTeacherRoute>
     );
 };
