@@ -33,7 +33,7 @@ export type GroupTableResponse = {
 type GroupState = {
     loading: boolean;
     groups: GroupTableItem[];
-    singleGroup: Group|null;
+    singleGroup: Group | null;
     total: number;
 
     fetchGroupsToTable: (params: {
@@ -49,21 +49,21 @@ type GroupState = {
     addStudentsToGroup: (groupId: string, studentsIds: string[]) => Promise<void>;
     removeStudentFromGroup: (id: string[]) => Promise<void>;
     fetchSingleGroup: (id: string) => Promise<void>;
-    deleteGroup: (ids:string[]) => Promise<void>;
+    deleteGroup: (ids: string[]) => Promise<void>;
 };
 
-export const useGroupStore = create<GroupState>((set,get) => ({
+export const useGroupStore = create<GroupState>((set, get) => ({
     loading: false,
     groups: [],
-    singleGroup:null,
+    singleGroup: null,
     total: 0,
 
     fetchGroupsToTable: async (params) => {
         try {
 
-            set({ loading: true });
+            set({loading: true});
 
-            const res = await axiosInstance.get<GroupTableResponse>("/api/v1/group", { params });
+            const res = await axiosInstance.get<GroupTableResponse>("/api/v1/group", {params});
 
             set({
                 groups: res.data.data,
@@ -73,22 +73,22 @@ export const useGroupStore = create<GroupState>((set,get) => ({
         } catch (e) {
             console.error(e);
         } finally {
-            set({ loading: false });
+            set({loading: false});
         }
     },
 
-    fetchSingleGroup: async (id:string)=>{
-        try{
-            set({loading:true})
+    fetchSingleGroup: async (id: string) => {
+        try {
+            set({loading: true})
             const res = await axiosInstance.get(`/api/v1/group/${id}`)
             set({
-                singleGroup:res.data,
+                singleGroup: res.data,
             })
-        }catch (e) {
+        } catch (e) {
             toast.error("Błąd poczas pobierania grupy")
             console.log("Błąd podczas pobierania grupy", e)
-        }finally {
-            set({ loading: false });
+        } finally {
+            set({loading: false});
         }
     },
 
@@ -117,9 +117,9 @@ export const useGroupStore = create<GroupState>((set,get) => ({
         }
     },
 
-    removeStudentFromGroup: async(ids:string[]) =>{
-        try{
-            await axiosInstance.post("api/v1/group/remove-students",{
+    removeStudentFromGroup: async (ids: string[]) => {
+        try {
+            await axiosInstance.post("api/v1/group/remove-students", {
                 studentsIds: ids
             })
 
@@ -133,16 +133,18 @@ export const useGroupStore = create<GroupState>((set,get) => ({
             }))
 
             toast.success("Użytkownik został usunięty z grupy")
-        }catch (e) {
+        } catch (e) {
             console.log(e)
             toast.error("Podczas usuwania ucznia wystąpił błąd")
         }
     },
-    deleteGroup : async(groupIds) =>{
+    deleteGroup: async (groupIds) => {
         try {
             await axiosInstance.delete("/api/v1/group/delete-groupes",
-                {data:
-                        {groupIds}}
+                {
+                    data:
+                        {groupIds}
+                }
             );
             toast.success("Grupy zostały usunięte");
 
@@ -150,10 +152,10 @@ export const useGroupStore = create<GroupState>((set,get) => ({
                 page: 0,
                 pageSize: 10,
             });
-        }catch (e:any) {
+        } catch (e: any) {
             toast.error(
                 e.response?.data?.message ||
-                "Błąd podczas usuwania zadań"
+                "Błąd podczas usuwania grup"
             );
             console.error(e);
 

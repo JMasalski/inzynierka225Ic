@@ -204,7 +204,7 @@ export const getAllTasks = async (req, res) => {
             : {};
 
         const orderBy = {
-               [ALLOWED_SORT_FIELDS.includes(sortField) ? sortField : "createdAt"]: sortOrder === "asc" ? "asc" : "desc",
+            [ALLOWED_SORT_FIELDS.includes(sortField) ? sortField : "createdAt"]: sortOrder === "asc" ? "asc" : "desc",
         };
 
         const [tasks, total] = await Promise.all([
@@ -237,7 +237,7 @@ export const getAllTasks = async (req, res) => {
                     },
                 },
             }),
-            prisma.task.count({ where }),
+            prisma.task.count({where}),
         ]);
 
         return res.status(200).json({
@@ -447,24 +447,24 @@ export const submitTask = async (req, res) => {
 
 export const toggleTaskStatus = async (req, res) => {
     try {
-        const { id } = req.params;
-        const { isActive } = req.body;
+        const {id} = req.params;
+        const {isActive} = req.body;
 
         if (typeof isActive !== "boolean") {
             return res.status(400).json({
                 message: "Nieprawidłowa wartość isActive",
             });
         }
-        const existingTask = await prisma.task.findUnique({ where: { id } });
+        const existingTask = await prisma.task.findUnique({where: {id}});
 
         if (!existingTask) {
-            return res.status(404).json({ message: "Zadanie nie istnieje" });
+            return res.status(404).json({message: "Zadanie nie istnieje"});
         }
 
 
         const task = await prisma.task.update({
-            where: { id },
-            data: { isActive },
+            where: {id},
+            data: {isActive},
             select: {
                 id: true,
                 isActive: true,
@@ -515,53 +515,67 @@ export const deleteTasks = async (req, res) => {
 };
 
 
-
 export const getAssignedGroup = async (req, res) => {
     const taskId = req.params.id;
 
     try {
 
         const task = await prisma.task.findUnique({
-        where: { id: taskId },
-        select: {
-            groups: {
-                select: {
-                    id: true,
-                    name: true,
+            where: {id: taskId},
+            select: {
+                groups: {
+                    select: {
+                        id: true,
+                        name: true,
+                    },
                 },
             },
-        },
-    });
+        });
 
         if (!task) {
-            return res.status(404).json({ message: "Zadanie nie istnieje" });
+            return res.status(404).json({message: "Zadanie nie istnieje"});
         }
 
         return res.status(200).json(task.groups);
-    }catch(err) {
+    } catch (err) {
         console.error(err);
-        return res.status(500).json({message:"Błąd w pobieraniu grup"})
+        return res.status(500).json({message: "Błąd w pobieraniu grup"})
     }
 }
 
 
-export const updateAssignedGroup  = async (req, res) => {
+export const updateAssignedGroup = async (req, res) => {
     const taskId = req.params.id;
-    const { groupIds } = req.body;
+    const {groupIds} = req.body;
     try {
+        if (!taskId || typeof taskId !== 'string') {
+            return res.status(400).json({message: "Nieprawidłowe ID zadania"});
+        }
+
+        if (!groupIds || !Array.isArray(groupIds)) {
+            return res.status(400).json({message: "groupIds musi być tablicą"});
+        }
+
+        const task = await prisma.task.findUnique({
+            where: {id: taskId}
+        });
+
+        if (!task) {
+            return res.status(404).json({message: "Zadanie nie istnieje"});
+        }
 
         await prisma.task.update({
-        where: { id: taskId },
-        data: {
-            groups: {
-                set: groupIds.map(id => ({ id })),
+            where: {id: taskId},
+            data: {
+                groups: {
+                    set: groupIds.map(id => ({id})),
+                },
             },
-        },
-    });
-        return res.status(200).json({message:"Grupy przydzielono pomyślnie"})
-    }catch(err) {
+        });
+        return res.status(200).json({message: "Grupy przydzielono pomyślnie"})
+    } catch (err) {
         console.error(err);
-        return res.status(500).json({message:"Błąd podczas przypisywania grup"})
+        return res.status(500).json({message: "Błąd podczas przypisywania grup"})
     }
 }
 

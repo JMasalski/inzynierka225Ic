@@ -150,6 +150,7 @@ const DataGridUsers = () => {
 
                 return [
                     <Button
+                        key={params.id}
                         onClick={() => resetPassword(params.id as string)}
                         variant={"ghost"}
                     >

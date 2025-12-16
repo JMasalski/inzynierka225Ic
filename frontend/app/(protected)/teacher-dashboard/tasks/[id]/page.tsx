@@ -121,6 +121,7 @@ const Page = () => {
             getActions: (params) => [
                 <Button
                     key="preview"
+                    variant="ghost"
                     className="flex items-center gap-1"
                     onClick={() => {
                         setActiveSubmission(params.row);

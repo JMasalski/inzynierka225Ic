@@ -1,6 +1,5 @@
 import {ROLES} from "../lib/roles.js";
 import prisma from "../lib/prismaClient.js";
-import {Role} from "@prisma/client";
 import * as bcrypt from "bcryptjs";
 
 export const getAllUsers = async (req, res) => {
