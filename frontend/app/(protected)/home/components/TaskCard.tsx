@@ -26,12 +26,12 @@ export const TaskCard = ({
                   }: TaskCardProps) => {
 
     const getStatusBadge = () => {
-        if (!hasSubmission) return null;
+        if (!hasSubmission || !submission) return null;
 
         if (submission?.status === 'PASSED') {
             return (
                 <span className="px-3 py-1.5 text-xs font-semibold rounded-full w-fit bg-green-100 text-green-800 whitespace-nowrap">
-                ✓ Zaliczone {submission.score !== null && `${submission.score}%`}
+                ✓ Zaliczone {submission?.score !== null && `${submission.score}%`}
             </span>
             );
         }

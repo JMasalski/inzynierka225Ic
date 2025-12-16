@@ -146,7 +146,7 @@ export const addStudentToGroup = async (req, res) => {
 
     } catch (err) {
         console.error(err);
-        return res.status(500).json({message: "Błąd podczas dodawania ucznia do grupy"});
+        return res.status(500).json({message: "Błąd podczas dodawania uczniów do grupy"});
     }
 }
 
@@ -207,7 +207,7 @@ export const removeStudentFromGroup = async (req, res) => {
         return res.status(200).json({ message: "Uczniowie zostali usunięci z grupy." });
     } catch (err) {
         console.error(err);
-        return res.status(500).json({ message: "Wystapił błąd podczas usuwania ucznia z grupy." });
+              return res.status(500).json({ message: "Wystąpił błąd podczas usuwania uczniów z grupy." });
     }
 };
 export const updateGroup = async (req, res) => {
@@ -232,6 +232,5 @@ export const updateGroup = async (req, res) => {
         return res.status(200).json({message: "Nazwa grupy zmieniona pomyślnie."});
     } catch (err) {
         console.error(err);
-        return res.status(500).json("Wystąpił błąd podczas aktualizowania grupy");
-    }
+        return res.status(500).json({message: "Wystąpił błąd podczas aktualizowania grupy"});    }
 }
