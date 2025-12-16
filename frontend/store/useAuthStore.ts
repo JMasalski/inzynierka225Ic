@@ -27,7 +27,6 @@ export const useAuthStore = create<AuthState>((set) => ({
     checkingAuth: true,
     loading: false,
 
-    //TODO POCZYSCIC TUTAJ
     login: async (loginData: z.infer<typeof loginFormSchema>) => {
         try {
             set({loading: true});
@@ -42,16 +41,13 @@ export const useAuthStore = create<AuthState>((set) => ({
         }
     },
     checkAuth: async () => {
-        console.log("checkAuth start")
         try {
             const res = await axiosInstance.get("/api/v1/auth/auth-user", { withCredentials: true });
-            console.log("checkAuth success", res.data);
             set({ authUser: res.data.user });
         } catch (err: any) {
             console.error("checkAuth error:", err.response?.data || err.message);
             set({ authUser: null });
         } finally {
-            console.log("checkAuth finished");
             set({ checkingAuth: false });
         }
     },

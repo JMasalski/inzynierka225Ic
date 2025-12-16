@@ -11,6 +11,7 @@ import useDebounce from "@/lib/useDebounce";
 import {Task} from "@/app/(protected)/teacher-dashboard/new-task/page";
 import {Switch} from "@mui/material";
 import {toast} from "sonner";
+import {Button} from "@/components/ui/button";
 
 
 const DataGridTasks = () => {
@@ -82,7 +83,7 @@ const DataGridTasks = () => {
         },
         {
             field: "groups",
-            headerName: "Grupy",
+            headerName: "Ilość przypisanych grup",
             width: 120,
             sortable: false,
             renderCell: (params) => params.value?.length ?? 0,
@@ -126,13 +127,13 @@ const DataGridTasks = () => {
             type: "actions",
             width: 120,
             getActions: (params) => [
-                <button
+                <Button
                     key="view"
                     onClick={() => router.push(`/teacher-dashboard/tasks/${params.id}`)}
-                    className="text-blue-600 hover:underline flex items-center gap-1"
+                    variant="ghost"
                 >
-                    <Eye className="h-4 w-4"/> Podgląd
-                </button>,
+                    <Eye className="h-4 w-4"/>
+                </Button>,
                 <ConfirmDeleteDialog
                     key="delete"
                     title="Usuń zadanie"

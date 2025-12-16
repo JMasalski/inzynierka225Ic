@@ -8,7 +8,6 @@ import {useRouter} from "next/navigation";
 const Navbar = () => {
     const {authUser,logout} = useAuthStore()
     const router = useRouter()
-    console.log(authUser)
 
     return (
         <header className="border-b bg-white/80 backdrop-blur-sm">

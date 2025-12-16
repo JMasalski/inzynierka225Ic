@@ -3,20 +3,17 @@ import {useTaskStore} from "@/store/useTaskStore";
 import Loader from "@/components/Loader";
 import {useEffect} from "react";
 import {Info} from "lucide-react";
-import {Button} from "@/components/ui/button";
-import {useRouter} from "next/navigation";
+import {TaskCard} from "@/app/(protected)/home/components/TaskCard";
 
 export default function Page() {
 
     const {studentTasks, getStudentTasks, loading} = useTaskStore()
-    const router = useRouter();
 
     useEffect(() => {
         getStudentTasks()
     }, [])
 
     if (loading) return <Loader/>
-    console.log(studentTasks)
 
     if (studentTasks.length===0) return (
         <div className="flex flex-col items-center justify-center text-center py-20 px-6">
@@ -37,14 +34,18 @@ export default function Page() {
     )
 
     return (
-        <div className="grid grid-cols-4 gap-5">
+        <div className="grid sm:grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-5">
             {studentTasks.map((task) => (
-                <div key={task.id}>
-                    {task.title}
-                    <Button onClick={()=>router.push(`/code-page/${task.id}`)}>
-                        Rozwiąż
-                    </Button>
-                </div>
+                <TaskCard
+                    key={task.id}
+                    taskId={task.id!}
+                    title={task.title}
+                    createdBy={`${task.createdBy!.firstName} 
+                    ${task.createdBy!.lastName}`}
+                    description={task.description}
+                    hasSubmission={task.hasSubmission}
+                    submission={task.submission}
+                />
             ))}
         </div>
     );

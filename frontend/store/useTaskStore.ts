@@ -3,6 +3,11 @@ import {Task} from "@/app/(protected)/teacher-dashboard/new-task/page";
 import {axiosInstance} from "@/lib/axiosInstance";
 import {toast} from "sonner";
 
+type AssignedGroup = {
+    id: string;
+    name: string;
+};
+
 type GetAllTasksParams = {
     page: number
     pageSize: number
@@ -43,6 +48,11 @@ type TaskState = {
     getAllTasks: (params: GetAllTasksParams) => Promise<void>;
     tasks: Task[];
     total: number;
+    assignedGroups: AssignedGroup[];
+    groupsLoading: boolean;
+
+    getAssignedGroups: (taskId: string) => Promise<void>;
+    updateAssignedGroups: (taskId: string, groupIds: string[]) => Promise<void>;
     toggleTaskStatus: (taskId: string, isActive: boolean) => Promise<void>;
 
     addTask: (data: Task) => Promise<void>;
@@ -62,18 +72,19 @@ export const useTaskStore = create<TaskState>((set,get) => ({
     loading: false,
     studentTasks: [],
     individualTask: null,
-    submitResponse:null,
+    submitResponse: null,
     taskCheckLoad: false,
     tasks: [],
     total: 0,
+    assignedGroups: [],
+    groupsLoading: false,
 
-    clearSubmitResponse: () => set({ submitResponse: null }),
+    clearSubmitResponse: () => set({submitResponse: null}),
 
     addTask: async (data) => {
         try {
             set({loading: true});
             const res = await axiosInstance.post("/api/v1/task", data)
-            console.log(res)
             toast.success(res.data.message)
 
         } catch (error: any) {
@@ -88,7 +99,6 @@ export const useTaskStore = create<TaskState>((set,get) => ({
         try {
             set({loading: true})
             const res = await axiosInstance.get("/api/v1/task/student-task")
-            console.log("TASKS HOME PAGE",res)
             set({studentTasks: res.data})
 
         } catch (e) {
@@ -116,41 +126,37 @@ export const useTaskStore = create<TaskState>((set,get) => ({
         }
     },
 
-    submitTask:async(data)=>{
-        try{
-            console.log("Zaczynam sprawdzac")
+    submitTask: async (data) => {
+        try {
 
             set({taskCheckLoad: true});
             const res = await axiosInstance.post("/api/v1/task/save-submission", data)
-            console.log(res)
             set({submitResponse: res.data})
-        }catch(error:any){
-            set({ submitResponse: null });
+        } catch (error: any) {
+            set({submitResponse: null});
             toast.error(error.response?.data?.message || "Wystąpił błąd podczas tworzenia zadania.")
-        }finally {
+        } finally {
             set({taskCheckLoad: false});
         }
     },
-    runTask:async(data)=>{
+    runTask: async (data) => {
         try {
             set({taskCheckLoad: true});
             const res = await axiosInstance.post("/api/v1/task/run", data)
-            console.log(res)
             set({submitResponse: res.data})
-        }catch(error:any){
+        } catch (error: any) {
             console.log(error);
-            set({ submitResponse: null });
+            set({submitResponse: null});
             toast.error(error.response?.data?.message || "Wystąpił błąd podczas uruchamiania testów.")
 
-        }finally {
+        } finally {
             set({taskCheckLoad: false});
         }
     },
-    getAllTasks: async ({ page, pageSize, search, sortField, sortOrder }) => {
-        console.log("Pobieram")
+    getAllTasks: async ({page, pageSize, search, sortField, sortOrder}) => {
 
         try {
-            set({ loading: true });
+            set({loading: true});
 
             const res = await axiosInstance.get("/api/v1/task", {
                 params: {
@@ -161,7 +167,6 @@ export const useTaskStore = create<TaskState>((set,get) => ({
                     sortOrder,
                 },
             });
-            console.log(res)
 
             set({
                 tasks: res.data.data,
@@ -173,7 +178,7 @@ export const useTaskStore = create<TaskState>((set,get) => ({
                 error.response?.data?.message || "Nie udało się pobrać zadań."
             );
         } finally {
-            set({ loading: false });
+            set({loading: false});
         }
     },
 
@@ -185,7 +190,7 @@ export const useTaskStore = create<TaskState>((set,get) => ({
 
             set((state) => ({
                 tasks: state.tasks.map((task) =>
-                    task.id === taskId ? { ...task, isActive } : task
+                    task.id === taskId ? {...task, isActive} : task
                 ),
             }));
         } catch (error) {
@@ -196,10 +201,10 @@ export const useTaskStore = create<TaskState>((set,get) => ({
     },
     deleteTasks: async (ids) => {
         try {
-            set({ loading: true });
+            set({loading: true});
 
             await axiosInstance.delete("/api/v1/task", {
-                data: { taskIds: ids },
+                data: {taskIds: ids},
             });
 
             toast.success("Zadania zostały usunięte");
@@ -215,9 +220,55 @@ export const useTaskStore = create<TaskState>((set,get) => ({
                 "Błąd podczas usuwania zadań"
             );
         } finally {
-            set({ loading: false });
+            set({loading: false});
         }
     },
+    getAssignedGroups: async (taskId: string) => {
+        try {
+            set({groupsLoading: true});
+
+            const res = await axiosInstance.get(
+                `/api/v1/task/${taskId}/groups`
+            );
+
+            set({
+                assignedGroups: res.data,
+            });
+
+        } catch (error: any) {
+            console.error(error);
+            toast.error(
+                error.response?.data?.message ||
+                "Nie udało się pobrać przypisanych grup"
+            );
+        } finally {
+            set({groupsLoading: false});
+        }
+    },
+    updateAssignedGroups: async (taskId: string, groupIds: string[]) => {
+        try {
+            set({groupsLoading: true});
+
+            await axiosInstance.put(
+                `/api/v1/task/${taskId}/groups`,
+                {groupIds}
+            );
+
+            toast.success("Grupy zostały zaktualizowane");
+
+            await get().getAssignedGroups(taskId);
+
+        } catch (error: any) {
+            console.error(error);
+            toast.error(
+                error.response?.data?.message ||
+                "Nie udało się zaktualizować grup"
+            );
+        } finally {
+            set({groupsLoading: false});
+        }
+    },
+
 
 
 }))

@@ -274,10 +274,44 @@ export const getStudentTask = async (req, res) => {
                         id: user.groupId
                     }
                 }
+            },
+            select: {
+                id: true,
+                title: true,
+                description: true,
+                createdAt: true,
+                createdBy: {
+                    select: {
+                        firstName: true,
+                        lastName: true
+                    }
+                },
+                Submission: {
+                    where: {
+                        userId: userId
+                    },
+                    select: {
+                        id: true,
+                        status: true,
+                        score: true,
+                        createdAt: true
+                    }
+                }
             }
         });
 
-        res.status(200).json(tasks);
+        // Mapuj tasks z informacją o submission
+        const tasksWithStatus = tasks.map(task => ({
+            id: task.id,
+            title: task.title,
+            description: task.description,
+            createdAt: task.createdAt,
+            createdBy: task.createdBy,
+            hasSubmission: task.Submission.length > 0,
+            submission: task.Submission[0] || null
+        }));
+
+        res.status(200).json(tasksWithStatus);
     } catch (err) {
         console.error(err);
         res.status(500).json({
@@ -285,7 +319,6 @@ export const getStudentTask = async (req, res) => {
         });
     }
 };
-
 export const getIndividualTask = async (req, res) => {
     try {
         const userId = req.user.id;
@@ -483,6 +516,52 @@ export const deleteTasks = async (req, res) => {
 
 
 
+export const getAssignedGroup = async (req, res) => {
+    const taskId = req.params.id;
+
+    try {
+
+        const task = await prisma.task.findUnique({
+        where: { id: taskId },
+        select: {
+            groups: {
+                select: {
+                    id: true,
+                    name: true,
+                },
+            },
+        },
+    });
+
+        if (!task) {
+            return res.status(404).json({ message: "Zadanie nie istnieje" });
+        }
+
+        return res.status(200).json(task.groups);
+    }catch(err) {
+        console.error(err);
+        return res.status(500).json({message:"Błąd w pobieraniu grup"})
+    }
+}
 
 
+export const updateAssignedGroup  = async (req, res) => {
+    const taskId = req.params.id;
+    const { groupIds } = req.body;
+    try {
+
+        await prisma.task.update({
+        where: { id: taskId },
+        data: {
+            groups: {
+                set: groupIds.map(id => ({ id })),
+            },
+        },
+    });
+        return res.status(200).json({message:"Grupy przydzielono pomyślnie"})
+    }catch(err) {
+        console.error(err);
+        return res.status(500).json({message:"Błąd podczas przypisywania grup"})
+    }
+}
 
