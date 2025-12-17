@@ -4,6 +4,7 @@ import {useEffect, useRef} from "react";
 import {useRouter, usePathname} from "next/navigation";
 import {useAuthStore} from "@/store/useAuthStore";
 import Navbar from "@/components/Navbar";
+import {ROLES} from "@/lib/roles";
 
 export default function ProtectedLayout({
                                             children
@@ -36,7 +37,19 @@ export default function ProtectedLayout({
         }
 
         if (authUser.hasOnboarded && pathname === "/onboarding") {
-            router.replace("/home");
+            if (authUser.role === ROLES.STUDENT) {
+                router.replace("/home");
+                return;
+            }else {
+                router.replace("/teacher-dashboard");
+            }
+
+        }
+        if (
+            authUser.role !== ROLES.STUDENT &&
+            pathname.startsWith("/home")
+        ) {
+            router.replace("/teacher-dashboard");
             return;
         }
     }, [authUser, checkingAuth, pathname, router]);
@@ -62,7 +75,7 @@ export default function ProtectedLayout({
 
     return (
         <div className="flex flex-col min-h-screen">
-            <Navbar />
+            <Navbar/>
             <main className="flex-1 flex bg-gradient-to-br from-purple-50 via-white to-pink-50">
                 <div className="container mx-auto px-4 py-8">
                     {children}
