@@ -17,6 +17,13 @@ type AddGroupDialogProps = {
     onOpenChange: (open: boolean) => void;
 };
 
+/**
+ * Render a modal dialog that collects a new group name and invokes group creation when saved.
+ *
+ * @param open - Whether the dialog is visible.
+ * @param onOpenChange - Callback invoked with the new open state when the dialog is opened or closed.
+ * @returns The rendered dialog element.
+ */
 export function AddGroupDialog({ open, onOpenChange }: AddGroupDialogProps) {
     const [groupName, setGroupName] = useState("");
     const {createGroup} = useGroupStore()

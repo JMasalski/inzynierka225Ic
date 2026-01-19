@@ -3,6 +3,20 @@ import Editor from "@monaco-editor/react";
 import {CheckCircle2, Clock, Database, XCircle} from "lucide-react";
 
 
+/**
+ * Modal that previews a submission: source code, score, runtime/memory, and per-test results.
+ *
+ * Displays a dialog showing the submitter's name, overall score and pass summary, a read-only code editor
+ * (language inferred from `submission.languageId`), and a list of test case results with inputs, expected
+ * and actual outputs, and any runtime or compilation errors. If `submission` is falsy, nothing is rendered.
+ *
+ * @param open - Controls whether the modal is open
+ * @param onClose - Called when the modal requests to close (e.g., backdrop click or close action)
+ * @param submission - Submission object to display. Expected shape includes at least:
+ *   `user.firstName`, `user.lastName`, `code`, `languageId`, `score`, `passedTests`, `totalTests`,
+ *   `allPassed`, `totalTime`, `maxMemory`, and optional `testResults` (array of `{ input, expectedOutput, actualOutput, passed, status, stderr, compile_output, time, memory }`)
+ * @returns A dialog element showing the submission preview, or `null` when `submission` is not provided
+ */
 export default function SubmissionPreviewModal({open, onClose, submission}: any) {
     if (!submission) return null;
 
