@@ -1,7 +1,7 @@
 "use client";
 
 import React, {useEffect, useState} from "react";
-import {DataGrid, GridColDef, GridRowSelectionModel, GridSortModel} from "@mui/x-data-grid";
+import {DataGrid, GridActionsCellItem, GridColDef, GridRowSelectionModel, GridSortModel} from "@mui/x-data-grid";
 import {Search, Eye} from "lucide-react";
 import {Input} from "@/components/ui/input";
 import ConfirmDeleteDialog from "@/app/(protected)/teacher-dashboard/componentes/ConfirmDeleteDialog";
@@ -127,13 +127,15 @@ const DataGridTasks = () => {
             type: "actions",
             width: 120,
             getActions: (params) => [
-                <Button
+                <GridActionsCellItem
                     key="view"
-                    onClick={() => router.push(`/teacher-dashboard/tasks/${params.id}`)}
-                    variant="ghost"
-                >
-                    <Eye className="h-4 w-4"/>
-                </Button>,
+                    icon={<Eye className="h-4 w-4" />}
+                    label="Podgląd"
+                    onClick={() =>
+                        router.push(`/teacher-dashboard/tasks/${params.id}`)
+                    }
+                    showInMenu={false}
+                />,
                 <ConfirmDeleteDialog
                     key="delete"
                     title="Usuń zadanie"

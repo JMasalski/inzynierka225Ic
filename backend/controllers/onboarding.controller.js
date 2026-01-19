@@ -1,4 +1,4 @@
-import prisma from "../lib/prismaClient.js";
+import prisma from "../utils/prismaClient.js";
 import * as bcrypt from "bcryptjs";
 
 export const completeOnboarding = async (req, res) => {
@@ -35,7 +35,6 @@ export const completeOnboarding = async (req, res) => {
                 role: true
             }
         });
-
 
 
         return res.status(200).json({

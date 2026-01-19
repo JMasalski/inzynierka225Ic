@@ -1,4 +1,4 @@
-import prisma from "../lib/prismaClient.js";
+import prisma from "../utils/prismaClient.js";
 
 
 export const getAllGroupes = async (req, res) => {
@@ -86,25 +86,27 @@ export const getGroup = async (req, res) => {
     }
 }
 export const createGroup = async (req, res) => {
-    const {name} = req.body;
+    const { name } = req.body;
 
     try {
-
-
         if (!name || !name.trim()) {
-            return res.status(400).json({message: "Nazwa grupy jest wymagana."});
+            return res.status(400).json({
+                message: "Nazwa grupy jest wymagana."
+            });
         }
 
         const existingGroup = await prisma.group.findUnique({
-            where: {name}
+            where: { name }
         });
 
         if (existingGroup) {
-            return res.status(400).json({message: "Grupa o tej nazwie już istnieje."});
+            return res.status(409).json({
+                message: "Grupa o tej nazwie już istnieje."
+            });
         }
 
         const newGroup = await prisma.group.create({
-            data: {name}
+            data: { name: name.trim() },
         });
 
         return res.status(201).json({
@@ -113,10 +115,11 @@ export const createGroup = async (req, res) => {
         });
 
     } catch (err) {
-        console.error(err);
+        console.error("Błąd tworzenia grupy:", err);
 
-
-        return res.status(500).json({message: "Błąd podczas tworzenia grupy"});
+        return res.status(500).json({
+            message: "Wystąpił błąd serwera podczas tworzenia grupy."
+        });
     }
 };
 

@@ -1,4 +1,4 @@
-import prisma from "../lib/prismaClient.js";
+import prisma from "../utils/prismaClient.js";
 
 export const getSubmissionsForTask = async (req, res) => {
     const { taskId } = req.params;

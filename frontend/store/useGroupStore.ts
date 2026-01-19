@@ -45,6 +45,7 @@ type GroupState = {
     }) => Promise<void>;
 
     updateGroupName: (groupId: string, data: { name: string }) => Promise<void>;
+    createGroup: (data: { name: string }) => Promise<void>;
 
     addStudentsToGroup: (groupId: string, studentsIds: string[]) => Promise<void>;
     removeStudentFromGroup: (id: string[]) => Promise<void>;
@@ -58,6 +59,30 @@ export const useGroupStore = create<GroupState>((set, get) => ({
     singleGroup: null,
     total: 0,
 
+    createGroup: async ({ name }) => {
+        try {
+            set({ loading: true });
+
+            await axiosInstance.post("/api/v1/group/create-group", { name });
+
+            toast.success("Grupa została dodana");
+
+            // 🔄 ODŚWIEŻENIE TABELI MUI
+            await get().fetchGroupsToTable({
+                page: 0,
+                pageSize: 10,
+            });
+
+        } catch (e: any) {
+            toast.error(
+                e.response?.data?.message ||
+                "Błąd podczas dodawania grupy"
+            );
+            console.error(e);
+        } finally {
+            set({ loading: false });
+        }
+    },
     fetchGroupsToTable: async (params) => {
         try {
 

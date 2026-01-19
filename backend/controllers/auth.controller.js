@@ -1,7 +1,7 @@
-import prisma from "../lib/prismaClient.js";
+import prisma from "../utils/prismaClient.js";
 import * as bcrypt from "bcryptjs";
-import {ROLES} from "../lib/roles.js";
-import {signToken} from "../lib/generateJWT.js";
+import {ROLES} from "../utils/roles.js";
+import {signToken} from "../utils/generateJWT.js";
 
 
 export const createUser = async (req, res) => {
@@ -10,15 +10,9 @@ export const createUser = async (req, res) => {
 
         const currentUser = req.user;
 
-        if (currentUser.role !== ROLES.ROOT && currentUser.role !== ROLES.TEACHER) {
-            return res.status(403).json({message: "Brak uprawnień do dodawania użytkowników"});
-        }
-
         if (!users || !Array.isArray(users) || users.length === 0) {
             return res.status(400).json({message: "Lista użytkowników jest wymagana"});
         }
-
-
 
         if (!process.env.FIRST_PASSWORD) {
             return res.status(500).json({message: "Brak FIRST_PASSWORD w pliku konfiguracyjnym"});
@@ -84,6 +78,7 @@ export const login = async (req, res) => {
 
         if (!existingUser) {
             return res.status(401).json({message: "Nieprawidłowy login lub hasło"});
+
         }
         const isPasswordMatch = await bcrypt.compare(password, existingUser.password);
         if (!isPasswordMatch) {

@@ -1,5 +1,5 @@
 import jwt from 'jsonwebtoken';
-import prisma from "../lib/prismaClient.js";
+import prisma from "../utils/prismaClient.js";
 
 
 export const authenticate = async (req, res, next) => {
@@ -17,7 +17,6 @@ export const authenticate = async (req, res, next) => {
     next();
 
     }catch(err){
-
         res.status(401).json({
             success: false,
             message: 'Unauthorized'

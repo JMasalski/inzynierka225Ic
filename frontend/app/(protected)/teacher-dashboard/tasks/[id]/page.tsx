@@ -82,7 +82,7 @@ const Page = () => {
             headerName: "Grupa",
             width: 220,
             valueGetter: (_, row) =>
-                `${row.user.group.name}`
+                `${row.user.group?.name}`
         },
         {
             field: "score",

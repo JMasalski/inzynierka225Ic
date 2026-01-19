@@ -1,5 +1,5 @@
-import prisma from "../lib/prismaClient.js";
-import {ROLES} from "../lib/roles.js";
+import prisma from "../utils/prismaClient.js";
+import {ROLES} from "../utils/roles.js";
 
 export const canAccessTask = async (req, res, next) => {
     const {taskId} = req.body;

@@ -32,6 +32,8 @@ export const onboardingFormSchema = z.object({
     path: ["confirmPassword"],
 });
 
+
+
 export const onboardingApiSchema = onboardingFormSchema.omit({
     confirmPassword: true
 });

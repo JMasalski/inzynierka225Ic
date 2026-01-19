@@ -3,13 +3,14 @@ import dotenv from 'dotenv';
 dotenv.config()
 import cors from 'cors';
 import cookieParser from 'cookie-parser';
-import {createRoot} from "./lib/createRoot.js";
+import {createRoot} from "./utils/createRoot.js";
 import authRouter from "./routes/auth.route.js";
 import onboardingRouter from "./routes/onboarding.route.js";
 import groupRouter from "./routes/group.route.js";
 import usersRouter from "./routes/users.route.js";
 import taskRouter from "./routes/task.route.js";
 import submissionRouter from "./routes/submission.router.js";
+
 const app = express();
 
 app.use(express.json());
@@ -19,8 +20,6 @@ app.use(cors({
 }))
 
 app.use(cookieParser())
-
-
 
 app.use('/api/v1/auth',authRouter);
 app.use('/api/v1/onboarding',onboardingRouter);

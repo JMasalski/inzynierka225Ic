@@ -1,4 +1,4 @@
-import { ROLES } from "../lib/roles.js";
+import { ROLES } from "../utils/roles.js";
 
 export const isTeacherOrRoot = (req, res, next) => {
     const requestingUser = req.user;

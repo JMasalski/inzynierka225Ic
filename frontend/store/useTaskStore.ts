@@ -101,8 +101,9 @@ export const useTaskStore = create<TaskState>((set,get) => ({
             const res = await axiosInstance.get("/api/v1/task/student-task")
             set({studentTasks: res.data})
 
-        } catch (e) {
+        } catch (e:any) {
             console.log(e)
+            toast.error(e.response?.data?.message || "Wystąpił błąd podczas pobierania zadania.")
 
         } finally {
             set({loading: false})
@@ -116,9 +117,9 @@ export const useTaskStore = create<TaskState>((set,get) => ({
             console.log(res)
             set({individualTask: res.data})
 
-        } catch (e) {
+        } catch (e:any) {
             console.log(e)
-
+            toast.error(e.response?.data?.message || "Wystąpił błąd podczas pobierania zadania.")
 
         } finally {
             set({loading: false});
@@ -128,13 +129,12 @@ export const useTaskStore = create<TaskState>((set,get) => ({
 
     submitTask: async (data) => {
         try {
-
             set({taskCheckLoad: true});
             const res = await axiosInstance.post("/api/v1/task/save-submission", data)
             set({submitResponse: res.data})
         } catch (error: any) {
             set({submitResponse: null});
-            toast.error(error.response?.data?.message || "Wystąpił błąd podczas tworzenia zadania.")
+            toast.error(error.response?.data?.message || "Wystąpił błąd podczas zapisywania zadania.")
         } finally {
             set({taskCheckLoad: false});
         }

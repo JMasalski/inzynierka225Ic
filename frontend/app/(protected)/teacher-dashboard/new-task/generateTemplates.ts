@@ -4,7 +4,7 @@ export const generateTemplates = (task: Task): Task => {
     const {name, params, return_type, return_element_type} = task.function_signature;
 
     if (!name) {
-        throw new Error("Function name is required");
+        throw new Error("Nazwa funkcji jest wymagana");
     }
 
     if (params.length === 0) {
@@ -283,10 +283,6 @@ const rl = readline.createInterface({
     output: process.stdout
 });
 ${jsParseCode}`;
-
-    // ------------------------------------------------------
-    // RETURN FINAL TASK ✔️
-    // ------------------------------------------------------
 
     return {
         ...task,

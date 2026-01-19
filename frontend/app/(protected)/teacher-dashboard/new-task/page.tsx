@@ -10,6 +10,7 @@ import TestCasesCard from "@/app/(protected)/teacher-dashboard/new-task/componen
 import {useTaskStore} from "@/store/useTaskStore";
 import ProtectedTeacherRoute from "@/app/(protected)/teacher-dashboard/ProtectedTeacherRoute";
 import {Loader2} from "lucide-react";
+import {toast} from "sonner";
 
 interface FunctionParameter {
     name: string;
@@ -94,7 +95,7 @@ const Page = () => {
             setTask(nextTask);
             setShowCodeBluePrint(true);
         } catch (err: any) {
-            alert(err.message);
+            toast.error(err.message);
         }
     };
 
@@ -143,7 +144,7 @@ const Page = () => {
 
                             await addTask(nextTask);
                         } catch (err: any) {
-                            alert(err.message);
+                            toast.error(err.message);
                         }
                     }}
                 >
