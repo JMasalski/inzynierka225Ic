@@ -1,6 +1,6 @@
 import * as bcrypt from 'bcryptjs'
-import { Role} from "@prisma/client";
 import prisma from "./prismaClient.js";
+import { ROLES } from "./roles.js";
 
 import dotenv from 'dotenv'
 
@@ -15,7 +15,7 @@ export const createRoot = async () => {
         return null;
     }
     const existingRoot = await prisma.user.findFirst({
-        where: {role: Role.ROOT},
+        where: {role: ROLES.ROOT},
     })
 
     if (!existingRoot) {
@@ -24,7 +24,7 @@ export const createRoot = async () => {
             data: {
                 username: rootLogin,
                 password: hashed,
-                role: Role.ROOT,
+                role: ROLES.ROOT,
                 hasOnboarded: true,
                 firstName: "Root",
                 lastName: "Root",
