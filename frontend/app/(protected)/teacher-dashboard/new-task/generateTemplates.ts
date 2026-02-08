@@ -95,10 +95,6 @@ export const generateTemplates = (task: Task): Task => {
     // Twoja funkcja${jsFunctionBody}
 }`;
 
-    // ------------------------------------------------------
-    // BOILERPLATES (hidden on FE)
-    // ------------------------------------------------------
-
     // --------- C++ BOILERPLATE ---------
     let cppInput = '';
 
